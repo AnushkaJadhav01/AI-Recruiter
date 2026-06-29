@@ -7,40 +7,28 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: '#FAFBFC',
+        card: '#FFFFFF',
         primary: {
           DEFAULT: '#2563EB',
           dark: '#1D4ED8',
-          light: '#DBEAFE',
+          light: '#3B82F6',
         },
-        secondary: {
-          DEFAULT: '#3B82F6',
-          dark: '#2563EB',
-          light: '#EFF6FF',
-        },
-        accent: {
-          DEFAULT: '#06B6D4',
-          dark: '#0891B2',
-          light: '#E0F2FE',
-        },
-        customBg: '#F8FAFC',
-        customCard: '#FFFFFF',
-        textPrimary: '#0F172A',
-        textSecondary: '#475569',
-        customBorder: '#E2E8F0',
-        customSuccess: '#22C55E',
-        customWarning: '#F59E0B',
-        customError: '#EF4444',
+        secondary: '#3B82F6',
+        success: '#10B981',
+        warning: '#F59E0B',
+        danger: '#EF4444',
+        border: '#E5E7EB',
+        textPrimary: '#111827',
+        textSecondary: '#6B7280',
+        textMuted: '#9CA3AF',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
       boxShadow: {
-        premium: '0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 8px -1px rgba(15, 23, 42, 0.03)',
-        card: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)',
-        sidebar: '1px 0 0 0 #E2E8F0',
-      },
-      borderRadius: {
-        'premium': '14px',
+        premium: '0 4px 20px -2px rgba(17, 24, 39, 0.04), 0 2px 6px -1px rgba(17, 24, 39, 0.02)',
+        cardHover: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
       }
     },
   },

@@ -1,30 +1,43 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+@config "../tailwind.config.js";
 
 @layer base {
   body {
-    @apply bg-customBg text-textPrimary font-sans antialiased;
+    @apply bg-background text-textPrimary antialiased font-sans;
+    font-family: 'Inter', sans-serif;
   }
 }
 
-/* Premium Scrollbar */
+/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #f8fafc;
-}
-::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: transparent;
 }
 
-/* Radar and chart customizations */
-.chart-container canvas {
-  max-width: 100%;
+::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D1D5DB;
+}
+
+/* Premium utility classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #111827 0%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
