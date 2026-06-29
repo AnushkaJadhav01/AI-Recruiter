@@ -1,0 +1,8 @@
+{
+  "name": "ai-recruiter",
+  "private": true,
+  "workspaces": ["frontend"],
+  "scripts": {
+    "dev": "npm --prefix frontend run dev"
+  }
+}
