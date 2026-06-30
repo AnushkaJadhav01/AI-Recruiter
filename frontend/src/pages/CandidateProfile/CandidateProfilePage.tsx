@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-export const CandidateProfilePage = () => {
-  return <section><h2>Candidate Profile</h2><p>Candidate profile placeholder.</p></section>
-=======
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -384,5 +380,4 @@ export const CandidateProfilePage = () => {
       </AnimatePresence>
     </div>
   )
->>>>>>> 81c760a878bbb7abb2e659b66198862b397b2d39
 }

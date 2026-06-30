@@ -32,7 +32,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
             className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden z-10 border border-gray-100 flex flex-col max-h-[85vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] bg-white shrink-0">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#F1DDD2] bg-white shrink-0">
               <h3 className="font-bold text-base text-gray-900">{title}</h3>
               <button 
                 onClick={onClose}

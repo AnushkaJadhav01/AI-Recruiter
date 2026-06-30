@@ -22,15 +22,15 @@ export const Timeline = ({ items, className = '' }: TimelineProps) => {
           )}
           
           {/* Circular Indicator */}
-          <div className="mt-1 w-6 h-6 rounded-full border-2 border-[#2563EB] bg-white flex items-center justify-center shrink-0 z-10">
-            <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
+          <div className="mt-1 w-6 h-6 rounded-full border-2 border-[#F97316] bg-white flex items-center justify-center shrink-0 z-10">
+            <span className="w-2 h-2 rounded-full bg-[#F97316]" />
           </div>
 
           {/* Details */}
           <div className="flex-1 pb-2">
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{item.date}</span>
             <h4 className="font-bold text-sm text-gray-900 mt-0.5">{item.title}</h4>
-            {item.subtitle && <p className="text-xs font-semibold text-[#2563EB] mt-0.5">{item.subtitle}</p>}
+            {item.subtitle && <p className="text-xs font-semibold text-[#F97316] mt-0.5">{item.subtitle}</p>}
             {item.description && <p className="text-xs text-gray-500 mt-2 leading-relaxed">{item.description}</p>}
           </div>
         </div>

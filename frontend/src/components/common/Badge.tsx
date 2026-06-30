@@ -12,7 +12,7 @@ export const Badge = ({
   className = '',
 }: BadgeProps) => {
   const styles = {
-    primary: 'bg-blue-50 text-[#2563EB] border-blue-100',
+    primary: 'bg-blue-50 text-[#F97316] border-blue-100',
     success: 'bg-emerald-50 text-[#10B981] border-emerald-100',
     warning: 'bg-amber-50 text-[#F59E0B] border-amber-100',
     danger: 'bg-red-50 text-[#EF4444] border-red-100',
@@ -25,3 +25,6 @@ export const Badge = ({
     </span>
   )
 }
+
+export default Badge
+

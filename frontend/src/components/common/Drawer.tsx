@@ -33,7 +33,7 @@ export const Drawer = ({ isOpen, onClose, title, children }: DrawerProps) => {
               className="w-screen max-w-md bg-white border-l border-gray-100 shadow-2xl flex flex-col"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-[#E5E7EB] bg-white shrink-0">
+              <div className="flex items-center justify-between px-6 py-5 border-b border-[#F1DDD2] bg-white shrink-0">
                 <h3 className="font-bold text-base text-gray-900">{title}</h3>
                 <button 
                   onClick={onClose}
@@ -44,7 +44,7 @@ export const Drawer = ({ isOpen, onClose, title, children }: DrawerProps) => {
               </div>
 
               {/* Content */}
-              <div className="p-6 overflow-y-auto flex-1 bg-[#FAFBFC]">
+              <div className="p-6 overflow-y-auto flex-1 bg-[#FFF8F4]">
                 {children}
               </div>
             </motion.div>

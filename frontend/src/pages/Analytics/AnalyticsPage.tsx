@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-export const AnalyticsPage = () => {
-  return <section><h2>Analytics</h2><p>Analytics dashboard placeholder.</p></section>
-=======
 import { 
   Chart as ChartJS, 
   CategoryScale, 
@@ -47,7 +43,7 @@ export const AnalyticsPage = () => {
       {
         label: 'Resumes Uploaded',
         data: [120, 180, 240, 310, 290, 482],
-        borderColor: '#2563EB',
+        borderColor: '#F97316',
         backgroundColor: 'rgba(37, 99, 235, 0.05)',
         tension: 0.3,
         fill: true,
@@ -64,7 +60,7 @@ export const AnalyticsPage = () => {
         data: [482, 184, 96, 28, 9],
         backgroundColor: [
           '#9CA3AF',
-          '#3B82F6',
+          '#F97316',
           '#6366F1',
           '#F59E0B',
           '#10B981'
@@ -81,7 +77,7 @@ export const AnalyticsPage = () => {
       {
         label: 'Applicants Count',
         data: [45, 142, 280, 110],
-        backgroundColor: '#3B82F6',
+        backgroundColor: '#F97316',
         borderRadius: 4
       }
     ]
@@ -94,7 +90,7 @@ export const AnalyticsPage = () => {
       {
         data: [420, 280, 140, 190, 80],
         backgroundColor: [
-          '#2563EB',
+          '#F97316',
           '#10B981',
           '#F59E0B',
           '#EF4444',
@@ -231,7 +227,7 @@ export const AnalyticsPage = () => {
         <h4 className="font-bold text-sm text-gray-950 mb-4">Monthly Performance Summary</h4>
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left text-gray-500">
-            <thead className="bg-[#FAFBFC] text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+            <thead className="bg-[#FFF8F4] text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
               <tr>
                 <th className="py-3 px-4">Recruiting Month</th>
                 <th className="py-3 px-4">Sourced</th>
@@ -257,5 +253,4 @@ export const AnalyticsPage = () => {
 
     </div>
   )
->>>>>>> 81c760a878bbb7abb2e659b66198862b397b2d39
 }

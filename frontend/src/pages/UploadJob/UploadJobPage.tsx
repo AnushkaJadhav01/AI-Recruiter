@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-export const UploadJobPage = () => {
-  return <section><h2>Upload Job</h2><p>Job description upload placeholder.</p></section>
-=======
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -177,7 +173,7 @@ export const UploadJobPage = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="h-full"
               >
-                <Card className="p-10 text-center text-gray-500 h-full flex flex-col justify-center items-center space-y-4 border-dashed bg-[#FAFBFC]">
+                <Card className="p-10 text-center text-gray-500 h-full flex flex-col justify-center items-center space-y-4 border-dashed bg-[#FFF8F4]">
                   <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center border border-gray-200">
                     <FiCpu className="w-8 h-8 text-gray-400" />
                   </div>
@@ -199,7 +195,7 @@ export const UploadJobPage = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="h-full"
               >
-                <Card className="p-10 text-center h-full flex flex-col justify-center items-center space-y-6 bg-[#FAFBFC]">
+                <Card className="p-10 text-center h-full flex flex-col justify-center items-center space-y-6 bg-[#FFF8F4]">
                   <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100 shadow-inner relative">
                     <FiCpu className="w-8 h-8 text-blue-600 relative z-10" />
                     <motion.div 
@@ -337,5 +333,4 @@ export const UploadJobPage = () => {
 
     </div>
   )
->>>>>>> 81c760a878bbb7abb2e659b66198862b397b2d39
 }

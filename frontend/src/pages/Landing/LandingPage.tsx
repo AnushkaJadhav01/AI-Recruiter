@@ -14,7 +14,8 @@ import {
   FiSearch,
   FiList,
   FiMessageSquare,
-  FiBriefcase} from 'react-icons/fi'
+  FiBriefcase,
+  FiSliders} from 'react-icons/fi'
 import { Button } from '../../components/common/Button'
 import { Card } from '../../components/common/Card'
 
@@ -42,368 +43,344 @@ export const LandingPage = () => {
   ]
 
   return (
-    <div className="bg-[#FAFBFC] min-h-screen text-gray-900 overflow-x-hidden selection:bg-blue-100">
+    <div className="bg-[#FFF8F4] min-h-screen text-gray-900 overflow-x-hidden selection:bg-blue-100">
       
-      {/* Navbar */}
-      <header className="border-b border-[#E5E7EB] bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 font-semibold text-lg">
-            <div className="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center text-white font-extrabold text-sm">
-              AR
+      {/* Navbar & Hero Section */}
+      <div className="relative w-full overflow-hidden">
+        {/* Navbar */}
+        <div className="absolute top-0 z-50 w-full py-4 text-sm font-semibold transition-colors duration-500">
+          <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div>
+              <Link to="/" className="flex items-center gap-3 font-semibold text-lg">
+                <img src="/logo.png" alt="NexHire Logo" className="w-8 h-8 rounded-lg object-contain" />
+                <span className="text-gray-900 font-bold tracking-tight">NexHire</span>
+              </Link>
             </div>
-            <span className="text-gray-900 font-bold tracking-tight">Recruiter<span className="text-[#2563EB]">.ai</span></span>
-          </Link>
-          
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-            <a href="#pipeline" className="hover:text-gray-950 transition-colors">Intelligence Pipeline</a>
-            <a href="#pricing" className="hover:text-gray-950 transition-colors">Pricing</a>
-            <a href="#faq" className="hover:text-gray-950 transition-colors">FAQ</a>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">Sign In</Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm">Start Free Trial</Button>
-            </Link>
+            <div className="md:flex gap-8 hidden text-[#6B7280] font-medium">
+              <a href="#how-it-works" className="hover:text-[#F97316] transition-colors">How it Works</a>
+              <a href="#features" className="hover:text-[#F97316] transition-colors">Features</a>
+              <Link to="/dashboard" className="hover:text-[#F97316] transition-colors">Platform Demo</Link>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link to="/login">
+                <button
+                  type="button"
+                  className="bg-[#FFF2EA] hover:bg-[#FFE8D6] border border-[#F1DDD2] rounded-xl px-5 py-2.5 text-xs font-bold text-[#F97316] transition-all"
+                >
+                  Sign In
+                </button>
+              </Link>
+              <Link to="/register">
+                <button
+                  type="button"
+                  className="bg-[#F97316] hover:bg-[#EA580C] rounded-xl px-5 py-2.5 text-xs font-bold text-white transition-all shadow-sm"
+                >
+                  Start Free Trial
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
-      </header>
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-20 px-6 max-w-7xl mx-auto text-center space-y-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-[#2563EB] text-[10px] font-bold uppercase tracking-wider border border-blue-100 mx-auto">
-          <FiCpu className="w-3.5 h-3.5" /> Introducing Multi-Agent Reasoning
-        </div>
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 leading-tight max-w-5xl mx-auto">
-          The AI-Native <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Recruiting OS</span>
-        </h1>
-        <p className="text-sm md:text-base text-gray-500 leading-relaxed max-w-2xl mx-auto font-medium">
-          Move beyond manual resume screening. Recruiter.ai uses an advanced multi-agent pipeline to extract Candidate DNA, build Evidence Graphs, and deliver an AI-ranked shortlist instantly.
-        </p>
-        
-        <div className="flex flex-wrap justify-center gap-4 pt-4">
-          <Link to="/register">
-            <Button className="gap-2 shadow-sm font-semibold">
-              Get Started Now <FiArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
-          <Link to="/dashboard">
-            <Button variant="outline" className="font-semibold text-gray-700">Explore Workspace Demo</Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Architecture Visual */}
-      <section className="px-6 max-w-6xl mx-auto pb-24">
-        <div className="relative rounded-2xl bg-gray-900 border border-gray-800 p-8 shadow-2xl overflow-hidden">
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent" />
+        {/* Header Hero Layout */}
+        <div className="flex pt-28 w-full xl:pt-16 justify-between min-h-screen items-center flex-wrap px-6 max-w-7xl mx-auto relative z-10">
+          <div className="max-w-lg 2xl:max-w-xl text-[#2D2A26] py-12 space-y-6">
           
-          <div className="relative z-10 flex flex-wrap items-center justify-center gap-6">
-            
-            {/* 1. Job Description */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 mx-auto mb-3 shadow-sm">
-                <FiLayers className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider">Job Description</p>
+                 <h1 className="max-w-4xl font-extrabold text-[44px] leading-[50px] tracking-[-0.02em] sm:text-6xl sm:leading-[70px] text-[#2D2A26]">
+  Intelligent Screening is The Key of Recruiting Success.
+</h1>
+            <p className="text-sm md:text-base text-[#6B7280] leading-relaxed">
+              Move beyond manual resume screening. NexHire uses an advanced multi-agent pipeline to extract Candidate DNA, build Evidence Graphs, and deliver an AI-ranked shortlist instantly.
+            </p>
+            <div className="flex items-center flex-wrap gap-4 pt-4">
+              <Link to="/register">
+                <button className="bg-[#F97316] hover:bg-[#EA580C] flex text-white font-bold w-[170px] h-[54px] rounded-3xl text-sm items-center justify-center transition-all shadow-md">
+                  Get Started{' '}
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 23 23"
+                    fill="none"
+                    className="mx-1"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect width="23" height="23" rx="5" fill="#FFE8D6" />
+                    <path
+                      d="M16.3536 12.3536C16.5488 12.1583 16.5488 11.8417 16.3536 11.6464L13.1716 8.46447C12.9763 8.2692 12.6597 8.2692 12.4645 8.46447C12.2692 8.65973 12.2692 8.97631 12.4645 9.17157L15.2929 12L12.4645 14.8284C12.2692 15.0237 12.2692 15.3403 12.4645 15.5355C12.6597 15.7308 12.9763 15.7308 13.1716 15.5355L16.3536 12.3536ZM7 12.5L16 12.5L16 11.5L7 11.5L7 12.5Z"
+                      fill="#2D2A26"
+                    />
+                  </svg>
+                </button>
+              </Link>
+              <Link to="/dashboard">
+                <button className="flex text-[#6B7280] hover:text-[#2D2A26] my-1 sm:my-0 items-center font-bold text-sm transition-colors">
+                  <svg
+                    width="44"
+                    height="44"
+                    viewBox="0 0 48 48"
+                    fill="none"
+                    className="mr-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="24" cy="24" r="20" fill="#F97316" />
+                    <circle cx="24" cy="24" r="20.95" stroke="#F97316" strokeWidth="0.1" />
+                    <circle cx="24" cy="24" r="22.95" stroke="#F97316" strokeWidth="0.1" />
+                    <circle cx="24" cy="24" r="21.95" stroke="#F97316" strokeWidth="0.1" />
+                    <circle cx="24" cy="24" r="23.95" stroke="#F97316" strokeWidth="0.1" />
+                    <path
+                      d="M31 22.2679C32.3333 23.0377 32.3333 24.9623 31 25.7321L22 30.9282C20.6667 31.698 19 30.7358 19 29.1962L19 18.8038C19 17.2642 20.6667 16.302 22 17.0718L31 22.2679Z"
+                      fill="#FFF2E5"
+                    />
+                  </svg>
+                  Explore Platform Demo
+                </button>
+              </Link>
             </div>
-            
-            <FiArrowRight className="text-gray-700 hidden md:block" />
-            
-            {/* 2. AI Role Persona */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-blue-400 mx-auto mb-3 shadow-sm">
-                <FiBriefcase className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider">AI Role Persona</p>
+          </div>
+          <div className="relative h-full flex justify-center items-center py-12 select-none">
+            <img
+              src="https://res.cloudinary.com/ddcg0rzlo/image/upload/v1651252781/Hero_mcnozf.png"
+              loading="lazy"
+              width="500"
+              height="500"
+              alt="Hero Platform Visual"
+              className="relative z-10 top-6 right-0 max-w-full h-auto drop-shadow-xl"
+            />
+            <div className="absolute -top-6 h-full w-[110%] pointer-events-none flex justify-center items-center z-0">
+              <svg
+                width="800"
+                height="600"
+                viewBox="0 0 1100 808"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="opacity-70 transform translate-x-12 scale-90 sm:scale-100"
+              >
+                <rect x="216" width="884" height="808" rx="60" fill="#FFE8D6" fillOpacity="0.75" />
+                <rect y="132" width="501" height="514" rx="60" fill="#FDBA74" fillOpacity="0.75" />
+              </svg>
             </div>
-
-            <FiArrowRight className="text-gray-700 hidden md:block" />
-
-            {/* 3. Candidate Discovery */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-emerald-400 mx-auto mb-3 shadow-sm">
-                <FiSearch className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider">Candidate Discovery</p>
-            </div>
-
-            <FiArrowRight className="text-gray-700 hidden md:block" />
-
-            {/* 4. Candidate DNA */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-purple-400 mx-auto mb-3 shadow-sm">
-                <FiZap className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider">Candidate DNA</p>
-            </div>
-
-            <FiArrowRight className="text-gray-700 hidden lg:block" />
-
-            {/* 5. Multi-Agent Reasoning */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-indigo-400 mx-auto mb-3 shadow-sm">
-                <FiCpu className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider">Multi-Agent Reasoning</p>
-            </div>
-
-            <FiArrowRight className="text-gray-700 hidden md:block" />
-
-            {/* 6. AI Rankings */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-orange-400 mx-auto mb-3 shadow-sm">
-                <FiList className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider">AI Rankings</p>
-            </div>
-
-            <FiArrowRight className="text-gray-700 hidden md:block" />
-
-            {/* 7. Interview Recommendations */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-teal-400 mx-auto mb-3 shadow-sm">
-                <FiMessageSquare className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider">Interview Recommendations</p>
-            </div>
-
-            <FiArrowRight className="text-gray-700 hidden md:block" />
-
-            {/* 8. Hiring Decision */}
-            <div className="text-center p-3 w-32">
-              <div className="w-12 h-12 rounded-xl bg-blue-600 border border-blue-500 flex items-center justify-center text-white mx-auto mb-3 shadow-lg shadow-blue-500/20">
-                <FiCheckCircle className="w-5 h-5" />
-              </div>
-              <p className="text-[9px] font-bold text-blue-200 uppercase tracking-wider">Hiring Decision</p>
-            </div>
-            
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Pipeline Features Section */}
-      <section id="pipeline" className="py-24 bg-white border-y border-[#E5E7EB] px-6">
-        <div className="max-w-7xl mx-auto space-y-16">
+      {/* Platform Features Section */}
+      <section id="features" className="py-24 bg-[#FFF5EF] border-y border-[#F1DDD2] px-6">
+        <div className="max-w-7xl mx-auto space-y-16 text-left">
           <div className="text-center max-w-2xl mx-auto space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-              The Intelligence Pipeline
+            <h2 className="text-3xl font-extrabold tracking-tight text-[#2D2A26] sm:text-4xl">
+              Features
             </h2>
-            <p className="text-xs text-gray-500 leading-relaxed font-medium">
-              We process every applicant through a 4-stage semantic architecture to guarantee high-signal hiring recommendations.
+            <p className="text-xs text-[#6B7280] leading-relaxed font-medium">
+              We replace resume claims with corroborated proof. Our platform utilizes advanced autonomous agents to inspect candidate data from every engineering angle.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card hoverEffect className="p-8 border-gray-200 bg-[#FAFBFC]">
-              <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 mb-6">
-                <FiZap className="w-5 h-5" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1: Multi-Agent Assessment */}
+            <div className="md:max-w-sm w-full p-5 rounded-2xl shadow-sm bg-white border border-[#F1DDD2] hover:border-[#F97316] transition-all duration-300 hover:transform hover:scale-[1.03] group flex flex-col justify-between">
+              <div>
+                <div className="mb-3">
+                  <span className="inline-block px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase bg-[#FFE8D6] text-[#F97316] rounded-full mb-2">
+                    Intelligence
+                  </span>
+                  <h2 className="text-sm font-extrabold text-[#2D2A26] mb-2 group-hover:text-[#F97316] transition-colors duration-200">
+                    Multi-Agent Assessment
+                  </h2>
+                </div>
+
+                <p className="text-[#6B7280] text-[11px] leading-relaxed mb-4">
+                  Autonomous recruiter agents run in parallel to review resume metrics, grade complex technical histories, and score candidates objectively.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-gray-950 mb-3">1. Candidate DNA Extraction</h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                Our parsing agent transforms unstructured PDFs and social profiles into a normalized matrix of hard skills, soft skills, and leadership indicators.
-              </p>
-            </Card>
 
-            <Card hoverEffect className="p-8 border-gray-200 bg-[#FAFBFC]">
-              <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 mb-6">
-                <FiActivity className="w-5 h-5" />
+              <div className="flex items-center justify-between mt-auto">
+                <Link to="/register">
+                  <button className="px-3.5 py-1.5 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold rounded-lg transition-colors duration-200 shadow-sm">
+                    Get Started
+                  </button>
+                </Link>
               </div>
-              <h3 className="font-bold text-base text-gray-950 mb-3">2. Evidence Graph Generation</h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                We cross-reference the extracted DNA against GitHub repositories and LinkedIn histories to corroborate claims and highlight contradiction flags.
-              </p>
-            </Card>
+            </div>
 
-            <Card hoverEffect className="p-8 border-gray-200 bg-[#FAFBFC]">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mb-6">
-                <FiGitCommit className="w-5 h-5" />
+            {/* Card 2: Evidence Graph */}
+            <div className="md:max-w-sm w-full p-5 rounded-2xl shadow-sm bg-white border border-[#F1DDD2] hover:border-[#F97316] transition-all duration-300 hover:transform hover:scale-[1.03] group flex flex-col justify-between">
+              <div>
+                <div className="mb-3">
+                  <span className="inline-block px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase bg-[#FFE8D6] text-[#F97316] rounded-full mb-2">
+                    Verification
+                  </span>
+                  <h2 className="text-sm font-extrabold text-[#2D2A26] mb-2 group-hover:text-[#F97316] transition-colors duration-200">
+                    Evidence Graph Verification
+                  </h2>
+                </div>
+
+                <p className="text-[#6B7280] text-[11px] leading-relaxed mb-4">
+                  Automatically audits public code repos, validating commit frequencies, structural code patterns, and career tenures to filter out inflated claims.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-gray-950 mb-3">3. AI Hiring Board (Workspaces)</h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                Manage campaigns efficiently. Our workspaces aggregate pipeline data, AI insights, and technical assessments into a single command center.
-              </p>
-            </Card>
 
-            <Card hoverEffect className="p-8 border-gray-200 bg-[#FAFBFC]">
-              <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 mb-6">
-                <FiCheckCircle className="w-5 h-5" />
+              <div className="flex items-center justify-between mt-auto">
+                <Link to="/register">
+                  <button className="px-3.5 py-1.5 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold rounded-lg transition-colors duration-200 shadow-sm">
+                    Get Started
+                  </button>
+                </Link>
               </div>
-              <h3 className="font-bold text-base text-gray-950 mb-3">4. Ranked Candidate Discovery</h3>
-              <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                Discover the top 1% of talent instantly. Candidates are ranked objectively based on Match Score, Code Quality, and Career Momentum.
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* Trusted Companies */}
-      <section className="py-12 px-6 text-center border-b border-[#E5E7EB] bg-[#FAFBFC]">
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6">Engineered for teams scaling at</p>
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center items-center gap-10 md:gap-16 opacity-40 grayscale">
-          <span className="font-extrabold text-lg text-gray-800 tracking-tight">STRIPE</span>
-          <span className="font-extrabold text-lg text-gray-800 tracking-tight">VERCEL</span>
-          <span className="font-extrabold text-lg text-gray-800 tracking-tight">LINEAR</span>
-          <span className="font-extrabold text-lg text-gray-800 tracking-tight">OPENAI</span>
-        </div>
-      </section>
+            {/* Card 3: Custom Workspace Tuning */}
+            <div className="md:max-w-sm w-full p-5 rounded-2xl shadow-sm bg-white border border-[#F1DDD2] hover:border-[#F97316] transition-all duration-300 hover:transform hover:scale-[1.03] group flex flex-col justify-between">
+              <div>
+                <div className="mb-3">
+                  <span className="inline-block px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase bg-[#FFE8D6] text-[#F97316] rounded-full mb-2">
+                    Tuning
+                  </span>
+                  <h2 className="text-sm font-extrabold text-[#2D2A26] mb-2 group-hover:text-[#F97316] transition-colors duration-200">
+                    Custom Workspace Tuning
+                  </h2>
+                </div>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto space-y-16">
-          <div className="text-center max-w-xl mx-auto space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900">Transparent Pricing</h2>
-            <p className="text-xs text-gray-500 font-medium">Choose the intelligence tier that fits your company size.</p>
-            
-            {/* Billing Toggle */}
-            <div className="inline-flex items-center gap-1.5 p-1 bg-gray-100 rounded-lg border border-gray-200/50 mt-4">
-              <button 
-                onClick={() => setBillingPeriod('monthly')}
-                className={`px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all ${
-                  billingPeriod === 'monthly' ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                Monthly
-              </button>
-              <button 
-                onClick={() => setBillingPeriod('annual')}
-                className={`px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all ${
-                  billingPeriod === 'annual' ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                Annual
-              </button>
+                <p className="text-[#6B7280] text-[11px] leading-relaxed mb-4">
+                  Tailor candidate ranking formulas to your hiring needs. Adjust scoring weights for systems engineering, front-end development, or systems leadership.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between mt-auto">
+                <Link to="/register">
+                  <button className="px-3.5 py-1.5 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold rounded-lg transition-colors duration-200 shadow-sm">
+                    Get Started
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Pro */}
-            <Card className="flex flex-col justify-between p-8 border-[#2563EB] ring-2 ring-blue-500/10 relative bg-white">
-              <div className="absolute top-0 right-6 -translate-y-1/2 bg-[#2563EB] text-white px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                Most Popular
-              </div>
-              <div className="space-y-4">
-                <p className="text-xs font-bold text-[#2563EB] uppercase tracking-wider">Professional</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-gray-950">
-                    ${billingPeriod === 'monthly' ? '249' : '199'}
-                  </span>
-                  <span className="text-xs text-gray-500 font-medium">/mo</span>
-                </div>
-                <p className="text-xs text-gray-500 font-medium">For scaling hiring teams and recruiting agencies.</p>
-                <div className="border-t border-gray-100 my-4" />
-                <ul className="space-y-3 text-xs text-gray-600 font-medium">
-                  <li className="flex items-center gap-2"><FiCheck className="text-emerald-500 shrink-0" /> Unlimited Candidate DNA Extractions</li>
-                  <li className="flex items-center gap-2"><FiCheck className="text-emerald-500 shrink-0" /> Full GitHub & LinkedIn Evidence Graphs</li>
-                  <li className="flex items-center gap-2"><FiCheck className="text-emerald-500 shrink-0" /> Custom AI Reasoning Weights</li>
-                </ul>
-              </div>
-              <Link to="/register" className="mt-8">
-                <Button className="w-full shadow-sm font-semibold">Start 14-Day Free Trial</Button>
-              </Link>
-            </Card>
-
-            {/* Enterprise */}
-            <Card className="flex flex-col justify-between p-8 border-gray-200 bg-white">
-              <div className="space-y-4">
-                <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">Enterprise</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-gray-950">Custom</span>
-                </div>
-                <p className="text-xs text-gray-500 font-medium">For large companies requiring custom SLA & SSO.</p>
-                <div className="border-t border-gray-100 my-4" />
-                <ul className="space-y-3 text-xs text-gray-600 font-medium">
-                  <li className="flex items-center gap-2"><FiCheck className="text-emerald-500 shrink-0" /> Private LLM Deployments</li>
-                  <li className="flex items-center gap-2"><FiCheck className="text-emerald-500 shrink-0" /> SAML/SSO Integration</li>
-                  <li className="flex items-center gap-2"><FiCheck className="text-emerald-500 shrink-0" /> Dedicated Solutions Architect</li>
-                </ul>
-              </div>
-              <a href="mailto:sales@recruiter.ai" className="mt-8">
-                <Button variant="outline" className="w-full font-semibold">Contact Sales</Button>
-              </a>
-            </Card>
+      {/* How it Works Section */}
+      <section id="how-it-works" className="py-24 bg-white px-6">
+        <div className="max-w-7xl mx-auto space-y-16">
+          <div className="text-center max-w-2xl mx-auto space-y-4">
+            <h2 className="text-3xl font-extrabold tracking-tight text-[#2D2A26] sm:text-4xl">
+              How NexHire Works
+            </h2>
+            <p className="text-sm text-[#6B7280] leading-relaxed font-medium">
+              A seamless pipeline from candidate sourcing to final decision.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+            {/* Step 1 */}
+            <div className="relative p-6 bg-[#FFF8F4] rounded-2xl border border-[#F1DDD2] text-center hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-12 h-12 mx-auto bg-[#F97316] text-white rounded-xl flex items-center justify-center font-bold text-xl mb-4 shadow-md">1</div>
+              <h3 className="text-sm font-bold text-[#2D2A26] mb-2">Connect Sources</h3>
+              <p className="text-[11px] text-[#6B7280]">Integrate with GitHub, LinkedIn, and your ATS to gather candidate data.</p>
+            </div>
+            {/* Step 2 */}
+            <div className="relative p-6 bg-[#FFF8F4] rounded-2xl border border-[#F1DDD2] text-center hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-12 h-12 mx-auto bg-[#F97316] text-white rounded-xl flex items-center justify-center font-bold text-xl mb-4 shadow-md">2</div>
+              <h3 className="text-sm font-bold text-[#2D2A26] mb-2">Extract DNA</h3>
+              <p className="text-[11px] text-[#6B7280]">Our AI evaluates skills, career momentum, and hard data points instantly.</p>
+            </div>
+            {/* Step 3 */}
+            <div className="relative p-6 bg-[#FFF8F4] rounded-2xl border border-[#F1DDD2] text-center hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-12 h-12 mx-auto bg-[#F97316] text-white rounded-xl flex items-center justify-center font-bold text-xl mb-4 shadow-md">3</div>
+              <h3 className="text-sm font-bold text-[#2D2A26] mb-2">AI Ranking</h3>
+              <p className="text-[11px] text-[#6B7280]">Candidates are objectively scored and ranked against your custom parameters.</p>
+            </div>
+            {/* Step 4 */}
+            <div className="relative p-6 bg-[#FFF8F4] rounded-2xl border border-[#F1DDD2] text-center hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-12 h-12 mx-auto bg-[#F97316] text-white rounded-xl flex items-center justify-center font-bold text-xl mb-4 shadow-md">4</div>
+              <h3 className="text-sm font-bold text-[#2D2A26] mb-2">Hire Smarter</h3>
+              <p className="text-[11px] text-[#6B7280]">Review the corroborated evidence graph and make confident decisions.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="py-24 px-6 bg-white border-t border-[#E5E7EB]">
-        <div className="max-w-3xl mx-auto space-y-12">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 text-center">Technical FAQ</h2>
-          
-          <div className="space-y-3">
-            {faqs.map((faq, idx) => {
-              const isOpen = openFaq === idx
-              return (
-                <div key={idx} className="border border-gray-200 rounded-xl bg-[#FAFBFC] overflow-hidden">
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between px-6 py-4 text-left font-semibold text-xs text-gray-900 hover:bg-gray-100/50 transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    <FiChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: 'auto' }}
-                        exit={{ height: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="px-6 pb-4 text-xs text-gray-600 leading-relaxed font-medium">{faq.a}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )
-            })}
+      {/* CTA Section */}
+      <section className="py-24 bg-gradient-to-br from-[#F97316] to-[#EA580C] px-6 text-center text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        <div className="max-w-3xl mx-auto space-y-8 relative z-10">
+          <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
+            Ready to Hire Smarter?
+          </h2>
+          <p className="text-base text-orange-100 font-medium max-w-xl mx-auto">
+            Join thousands of modern recruiting teams using AI to find the perfect candidate faster than ever.
+          </p>
+          <div className="pt-4">
+            <Link to="/register">
+              <button className="bg-white text-[#EA580C] hover:bg-orange-50 px-8 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                Start Your Free Trial
+              </button>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12 px-6 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-[#2D2A26] text-[#D6D3D1] pt-16 pb-8 px-6 border-t border-white/10 text-xs font-semibold select-none text-left">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-white/10">
+          {/* Logo Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 font-semibold text-lg text-white">
-              <div className="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center text-white font-extrabold text-sm">
-                AR
-              </div>
-              <span className="tracking-tight">Recruiter.ai</span>
+              <img src="/logo.png" alt="NexHire Logo" className="w-8 h-8 rounded-lg object-contain" />
+              <span className="tracking-tight font-bold">NexHire</span>
             </div>
-            <p className="text-[11px] leading-relaxed font-medium">
-              The AI-Native Recruiting OS for engineering teams.
+            <p className="text-[11px] leading-relaxed text-[#D6D3D1] font-medium max-w-xs">
+              Next-generation talent intelligence platform leveraging multi-agent evaluation pipelines to extract Candidate DNA and evidence validation.
             </p>
           </div>
+
+          {/* Platform Column */}
           <div>
-            <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-4">Product</h4>
+            <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-4">Platform</h4>
             <ul className="space-y-2 text-xs font-medium">
-              <li><a href="#pipeline" className="hover:text-white">Pipeline</a></li>
-              <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
-              <li><Link to="/dashboard" className="hover:text-white">Workspace Demo</Link></li>
+              <li><a href="#features" className="hover:text-[#FDBA74] transition-colors">Core Capabilities</a></li>
+              <li><Link to="/dashboard" className="hover:text-[#FDBA74] transition-colors">Workspace Demo</Link></li>
+              <li><Link to="/register" className="hover:text-[#FDBA74] transition-colors">Get Started</Link></li>
             </ul>
           </div>
+
+          {/* Legal Column */}
           <div>
-            <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-4">Security</h4>
+            <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-4">Security & Legal</h4>
             <ul className="space-y-2 text-xs font-medium">
-              <li><a href="#compliance" className="hover:text-white">SOC 2 Compliance</a></li>
-              <li><a href="#privacy" className="hover:text-white">Privacy Policy</a></li>
+              <li><span className="text-[#D6D3D1] cursor-default">SOC 2 Type II Certified</span></li>
+              <li><span className="text-[#D6D3D1] cursor-default">Privacy Policy</span></li>
+              <li><span className="text-[#D6D3D1] cursor-default">Terms of Service</span></li>
             </ul>
           </div>
+
+          {/* Newsletter Column */}
+          <div className="space-y-4">
+            <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-2">Stay Connected</h4>
+            <p className="text-[10px] text-[#D6D3D1] font-medium leading-relaxed">
+              Subscribe to receive insights on AI hiring trends and technical screening standards.
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Enter email address"
+                className="flex-1 bg-white/10 border border-white/15 px-3 py-2 rounded-lg text-white placeholder-[#D6D3D1] outline-none text-xs focus:ring-1 focus:ring-[#F97316] focus:border-[#F97316] transition-all"
+              />
+              <button className="bg-[#F97316] hover:bg-[#EA580C] text-white px-3 py-2 rounded-lg text-xs font-bold transition-colors">
+                Join
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-[10px]">
           <div>
-            <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-4">Company</h4>
-            <ul className="space-y-2 text-xs font-medium">
-              <li><a href="#about" className="hover:text-white">About Us</a></li>
-              <li><a href="#careers" className="hover:text-white">Careers</a></li>
-            </ul>
+            <p>© 2026 NexHire. All rights reserved. Enterprise Recruiting Intelligence.</p>
+          </div>
+          <div className="flex gap-6">
+            <Link to="/privacy" className="hover:text-[#FDBA74] transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-[#FDBA74] transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>
-
     </div>
   )
 }

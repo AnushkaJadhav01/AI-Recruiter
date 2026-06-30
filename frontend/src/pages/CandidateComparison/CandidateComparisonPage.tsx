@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-export const CandidateComparisonPage = () => {
-  return <section><h2>Candidate Comparison</h2><p>Side-by-side comparison placeholder.</p></section>
-=======
 import { useState } from 'react'
 import { 
   FiCpu, 
@@ -42,20 +38,20 @@ const RadarChart = ({ dataA, dataB, labels }: { dataA: number[], dataB: number[]
             const y = center + r * Math.sin(angleStep * i - Math.PI / 2)
             return `${x},${y}`
           }).join(' ')
-          return <polygon key={level} points={points} fill="none" stroke="#E5E7EB" strokeWidth="1" strokeDasharray={level === 100 ? "" : "4 4"} />
+          return <polygon key={level} points={points} fill="none" stroke="#F1DDD2" strokeWidth="1" strokeDasharray={level === 100 ? "" : "4 4"} />
         })}
 
         {/* Axes */}
         {labels.map((_, i) => {
           const { x, y } = getCoordinatesForValue(100, i)
-          return <line key={`axis-${i}`} x1={center} y1={center} x2={x} y2={y} stroke="#E5E7EB" strokeWidth="1" />
+          return <line key={`axis-${i}`} x1={center} y1={center} x2={x} y2={y} stroke="#F1DDD2" strokeWidth="1" />
         })}
 
         {/* Data A Polygon (Blue) */}
-        <polygon points={pathA} fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" strokeWidth="2" />
+        <polygon points={pathA} fill="rgba(37, 99, 235, 0.2)" stroke="#F97316" strokeWidth="2" />
         {dataA.map((v, i) => {
           const { x, y } = getCoordinatesForValue(v, i)
-          return <circle key={`pointA-${i}`} cx={x} cy={y} r="4" fill="#2563EB" />
+          return <circle key={`pointA-${i}`} cx={x} cy={y} r="4" fill="#F97316" />
         })}
 
         {/* Data B Polygon (Emerald) */}
@@ -265,7 +261,7 @@ export const CandidateComparisonPage = () => {
 
               <div className="space-y-2">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiGithub /> GitHub Footprint</p>
-                <div className="p-3 rounded-xl border border-gray-100 bg-[#FAFBFC] flex justify-between items-center shadow-sm">
+                <div className="p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] flex justify-between items-center shadow-sm">
                   <div>
                     <p className="font-extrabold text-gray-900">{activeA.github.commits}</p>
                     <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Commits</p>
@@ -279,7 +275,7 @@ export const CandidateComparisonPage = () => {
 
               <div className="space-y-2 pt-2 border-t border-gray-100">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiLinkedin /> LinkedIn Network</p>
-                <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FAFBFC] shadow-sm">
+                <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] shadow-sm">
                   <span className="font-extrabold text-gray-900">{activeA.linkedin.connections} Conns</span>
                   <span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{activeA.linkedin.tenure} / Role</span>
                 </div>
@@ -335,7 +331,7 @@ export const CandidateComparisonPage = () => {
 
               <div className="space-y-2">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiGithub /> GitHub Footprint</p>
-                <div className="p-3 rounded-xl border border-gray-100 bg-[#FAFBFC] flex justify-between items-center shadow-sm">
+                <div className="p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] flex justify-between items-center shadow-sm">
                   <div>
                     <p className="font-extrabold text-gray-900">{activeB.github.commits}</p>
                     <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Commits</p>
@@ -349,7 +345,7 @@ export const CandidateComparisonPage = () => {
 
               <div className="space-y-2 pt-2 border-t border-gray-100">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiLinkedin /> LinkedIn Network</p>
-                <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FAFBFC] shadow-sm">
+                <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] shadow-sm">
                   <span className="font-extrabold text-gray-900">{activeB.linkedin.connections} Conns</span>
                   <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">{activeB.linkedin.tenure} / Role</span>
                 </div>
@@ -379,5 +375,4 @@ export const CandidateComparisonPage = () => {
       </div>
     </div>
   )
->>>>>>> 81c760a878bbb7abb2e659b66198862b397b2d39
 }

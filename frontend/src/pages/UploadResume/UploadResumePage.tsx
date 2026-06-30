@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-export const UploadResumePage = () => {
-  return <section><h2>Upload Resume</h2><p>Resume uploading placeholder.</p></section>
-=======
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -113,7 +109,7 @@ export const UploadResumePage = () => {
             <h4 className="font-bold text-sm text-gray-950 mb-4">1. Select Candidate Resume</h4>
             
             {status === 'idle' && (
-              <div className="border-2 border-dashed border-gray-200 hover:border-blue-500 rounded-xl p-10 text-center bg-[#FAFBFC] transition-colors relative cursor-pointer group">
+              <div className="border-2 border-dashed border-gray-200 hover:border-blue-500 rounded-xl p-10 text-center bg-[#FFF8F4] transition-colors relative cursor-pointer group">
                 <input 
                   type="file" 
                   accept=".pdf,.docx,.txt"
@@ -121,7 +117,7 @@ export const UploadResumePage = () => {
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
                 <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-blue-50 text-[#2563EB] flex items-center justify-center mx-auto border border-blue-100 group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-full bg-blue-50 text-[#F97316] flex items-center justify-center mx-auto border border-blue-100 group-hover:scale-105 transition-transform">
                     <FiUploadCloud size={24} />
                   </div>
                   <div>
@@ -135,7 +131,7 @@ export const UploadResumePage = () => {
             {/* Uploading progress indicator */}
             {status === 'uploading' && (
               <div className="py-8 space-y-4 text-center">
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#2563EB] flex items-center justify-center mx-auto border border-blue-100 animate-pulse">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#F97316] flex items-center justify-center mx-auto border border-blue-100 animate-pulse">
                   <FiUploadCloud size={20} />
                 </div>
                 <div className="space-y-2 max-w-xs mx-auto">
@@ -158,7 +154,7 @@ export const UploadResumePage = () => {
               <div className="py-8 space-y-4 text-center">
                 <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
                 <div className="space-y-1">
-                  <span className="text-[9px] font-bold text-[#2563EB] uppercase tracking-wider bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                  <span className="text-[9px] font-bold text-[#F97316] uppercase tracking-wider bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
                     AI Sieve Engine Active
                   </span>
                   <p className="text-xs font-semibold text-gray-950 mt-3">{parsingStep}</p>
@@ -217,7 +213,7 @@ export const UploadResumePage = () => {
                 exit={{ opacity: 0, y: 10 }}
               >
                 <Card className="p-8 text-center min-h-[400px] flex flex-col justify-center items-center space-y-4">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#2563EB] animate-spin" />
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#F97316] animate-spin" />
                   <p className="text-xs text-gray-500">Assembling structured candidate data models...</p>
                 </Card>
               </motion.div>
@@ -245,8 +241,8 @@ export const UploadResumePage = () => {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-2xl font-extrabold text-[#2563EB]">{mockCandidate.matchScore}%</div>
-                      <p className="text-[9px] text-[#2563EB] font-bold uppercase tracking-wider">AI MATCH SCORE</p>
+                      <div className="text-2xl font-extrabold text-[#F97316]">{mockCandidate.matchScore}%</div>
+                      <p className="text-[9px] text-[#F97316] font-bold uppercase tracking-wider">AI MATCH SCORE</p>
                     </div>
                   </div>
 
@@ -258,7 +254,7 @@ export const UploadResumePage = () => {
                         onClick={() => setActiveTab(tab as any)}
                         className={`py-3 px-4 border-b-2 font-bold text-xs capitalize transition-all ${
                           activeTab === tab 
-                            ? 'border-[#2563EB] text-[#2563EB]' 
+                            ? 'border-[#F97316] text-[#F97316]' 
                             : 'border-transparent text-gray-500 hover:text-gray-900'
                         }`}
                       >
@@ -333,7 +329,7 @@ export const UploadResumePage = () => {
                     {activeTab === 'projects' && (
                       <div className="space-y-4">
                         {mockCandidate.projects.map((proj, idx) => (
-                          <div key={idx} className="p-4 rounded-xl border border-gray-150 bg-[#FAFBFC] space-y-2 text-xs">
+                          <div key={idx} className="p-4 rounded-xl border border-gray-150 bg-[#FFF8F4] space-y-2 text-xs">
                             <div className="flex justify-between items-start">
                               <h5 className="font-bold text-gray-950">{proj.name}</h5>
                               <a href={proj.link} className="text-blue-600 hover:underline font-semibold text-[10px]">GitHub Repository</a>
@@ -353,5 +349,4 @@ export const UploadResumePage = () => {
       </div>
     </div>
   )
->>>>>>> 81c760a878bbb7abb2e659b66198862b397b2d39
 }

@@ -55,9 +55,9 @@ const CandidateComparisonPage = () => {
           Math.min(100, (parseInt(candidateA.experience) || 0) * 10)
         ] : [0,0,0,0,0],
         backgroundColor: 'rgba(37, 99, 235, 0.15)',
-        borderColor: '#2563EB',
+        borderColor: '#F97316',
         borderWidth: 2,
-        pointBackgroundColor: '#2563EB',
+        pointBackgroundColor: '#F97316',
       },
       {
         label: candidateB ? candidateB.name : 'Candidate B',

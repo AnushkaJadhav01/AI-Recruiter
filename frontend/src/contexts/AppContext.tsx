@@ -1,9 +1,28 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { mockJobs, mockCandidates, mockInsights, mockActivities } from '../services/mockData';
 
-const AppContext = createContext();
+export interface AppContextType {
+  jobs: any[];
+  candidates: any[];
+  insights: any;
+  activities: any[];
+  notifications: any[];
+  currentUser: any;
+  theme: string;
+  toggleTheme: () => void;
+  addJob: (job: any) => void;
+  deleteJob: (id: string) => void;
+  updateJob: (id: string, updatedJob: any) => void;
+  addCandidate: (cand: any) => void;
+  addNotification: (text: string) => void;
+  markAllNotificationsRead: () => void;
+  loginUser: (user: any) => void;
+  logoutUser: () => void;
+}
 
-export const AppProvider = ({ children }) => {
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [jobs, setJobs] = useState(() => {
     const local = localStorage.getItem('ai_recruiter_jobs');
     return local ? JSON.parse(local) : mockJobs;
@@ -157,4 +176,10 @@ export const AppProvider = ({ children }) => {
   );
 };
 
-export const useApp = () => useContext(AppContext);
+export const useApp = () => {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error('useApp must be used within an AppProvider');
+  }
+  return context;
+};

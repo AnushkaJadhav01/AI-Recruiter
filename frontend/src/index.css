@@ -3,6 +3,92 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
+@theme {
+  --color-background: #FFF8F4;
+  --color-card: #FFFFFF;
+  --color-border: #F1DDD2;
+  
+  --color-primary-DEFAULT: #F97316;
+  --color-primary-dark: #EA580C;
+  --color-primary-light: #FFE8D6;
+  
+  --color-secondary: #FFFFFF;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
+  
+  --color-textPrimary: #2D2A26;
+  --color-textSecondary: #6B7280;
+  --color-textMuted: #9CA3AF;
+
+  --color-blue-50: #FFE8D6;
+  --color-blue-100: #FFE8D6;
+  --color-blue-200: #FFF2E5;
+  --color-blue-300: #FDBA74;
+  --color-blue-400: #F97316;
+  --color-blue-500: #F97316;
+  --color-blue-600: #F97316;
+  --color-blue-700: #EA580C;
+  --color-blue-800: #EA580C;
+  --color-blue-900: #2D2A26;
+  --color-blue-950: #2D2A26;
+
+  --color-indigo-50: #FFE8D6;
+  --color-indigo-100: #FFE8D6;
+  --color-indigo-200: #FFF2E5;
+  --color-indigo-300: #FDBA74;
+  --color-indigo-400: #F97316;
+  --color-indigo-500: #F97316;
+  --color-indigo-600: #F97316;
+  --color-indigo-700: #EA580C;
+  --color-indigo-800: #EA580C;
+  --color-indigo-900: #2D2A26;
+  --color-indigo-950: #2D2A26;
+
+  --color-emerald-50: #DCFCE7;
+  --color-emerald-100: #DCFCE7;
+  --color-emerald-500: #16A34A;
+  --color-emerald-600: #16A34A;
+  --color-emerald-700: #15803D;
+
+  --color-green-50: #DCFCE7;
+  --color-green-100: #DCFCE7;
+  --color-green-500: #16A34A;
+  --color-green-600: #16A34A;
+  --color-green-700: #15803D;
+
+  --color-purple-50: #F3E8FF;
+  --color-purple-100: #F3E8FF;
+  --color-purple-500: #A855F7;
+  --color-purple-600: #A855F7;
+
+  --color-yellow-50: #FEF3C7;
+  --color-yellow-100: #FEF3C7;
+  --color-yellow-500: #D97706;
+  --color-yellow-600: #D97706;
+
+  --color-amber-50: #FEF3C7;
+  --color-amber-100: #FEF3C7;
+  --color-amber-500: #D97706;
+  --color-amber-600: #D97706;
+
+  --color-red-50: #FEE2E2;
+  --color-red-100: #FEE2E2;
+  --color-red-500: #DC2626;
+  --color-red-600: #DC2626;
+
+  --color-pink-50: #FCE7F3;
+  --color-pink-100: #FCE7F3;
+  --color-pink-500: #EC4899;
+  --color-pink-600: #EC4899;
+
+  --color-cyan-50: #DBEAFE;
+  --color-cyan-100: #DBEAFE;
+  --color-cyan-500: #2563EB;
+  --color-cyan-600: #2563EB;
+}
+
 @layer base {
   body {
     @apply bg-background text-textPrimary antialiased font-sans;
@@ -21,7 +107,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E5E7EB;
+  background: #F1DDD2;
   border-radius: 9999px;
 }
 
@@ -37,7 +123,8 @@
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #111827 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #2D2A26 0%, #F97316 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }

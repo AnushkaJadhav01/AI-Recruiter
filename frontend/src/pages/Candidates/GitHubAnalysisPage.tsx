@@ -48,7 +48,7 @@ const GitHubAnalysisPage = () => {
     datasets: [
       {
         data: hasLangData ? activeCandidate.githubAnalysis.languages.map(l => l.percentage) : [100],
-        backgroundColor: ['#3B82F6', '#06B6D4', '#6366F1', '#475569'],
+        backgroundColor: ['#F97316', '#06B6D4', '#6366F1', '#475569'],
         borderWidth: 1.5,
         borderColor: '#FFFFFF',
       }

@@ -23,8 +23,8 @@ export const Button = ({
   const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0'
   
   const variants = {
-    primary: 'bg-[#2563EB] hover:bg-blue-700 text-white focus:ring-blue-500 border border-transparent shadow-sm',
-    secondary: 'bg-[#3B82F6] hover:bg-blue-600 text-white focus:ring-blue-400 border border-transparent shadow-sm',
+    primary: 'bg-[#F97316] hover:bg-blue-700 text-white focus:ring-blue-500 border border-transparent shadow-sm',
+    secondary: 'bg-[#F97316] hover:bg-blue-600 text-white focus:ring-blue-400 border border-transparent shadow-sm',
     outline: 'bg-white hover:bg-gray-50 text-gray-700 focus:ring-blue-500 border border-gray-300 shadow-sm',
     danger: 'bg-[#EF4444] hover:bg-red-700 text-white focus:ring-red-500 border border-transparent shadow-sm',
     ghost: 'bg-transparent hover:bg-gray-50 text-gray-700 focus:ring-gray-300 border border-transparent',
@@ -49,3 +49,6 @@ export const Button = ({
     </motion.button>
   )
 }
+
+export default Button
+
