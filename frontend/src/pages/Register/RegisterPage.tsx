@@ -1,3 +1,9 @@
+import { auth, database } from "../../firebase/firebase";
+
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
+import { ref, set } from "firebase/database";
+
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -15,20 +21,84 @@ export const RegisterPage = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    if (!name.trim()) { setError('Please enter your full name.'); return }
-    if (!email.trim()) { setError('Please enter a valid email address.'); return }
-    if (!password || password.length < 6) { setError('Password must be at least 6 characters.'); return }
-    if (!role) { setError('Please select if you are a Recruiter or Candidate.'); return }
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      loginUser({ name, email, role })
-      navigate('/dashboard')
-    }, 1000)
+  const handleSubmit = async (e: React.FormEvent) => {
+
+  e.preventDefault();
+
+  setError("");
+
+  if (!name.trim()) {
+    setError("Please enter your full name.");
+    return;
   }
+
+  if (!email.trim()) {
+    setError("Please enter a valid email.");
+    return;
+  }
+
+  if (!password || password.length < 6) {
+    setError("Password must be at least 6 characters.");
+    return;
+  }
+
+  if (!role) {
+    setError("Please select Recruiter or Candidate.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    console.log("Creating account...");
+
+    const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+    );
+
+    console.log("User created:", userCredential.user);
+
+    const user = userCredential.user;
+
+    await set(
+        ref(database, "users/" + user.uid),
+        {
+            name,
+            email,
+            role,
+            createdAt: Date.now()
+        }
+    );
+
+    console.log("Saved to database");
+
+    loginUser({
+        name,
+        email,
+        role
+    });
+
+    navigate("/dashboard");
+
+}
+catch (err: any) {
+
+    console.error("Firebase Error:", err);
+
+    alert(err.code + "\n" + err.message);
+
+    setError(err.message);
+
+}
+finally {
+
+    setLoading(false);
+
+}
+}
 
   return (
     <div className="min-h-screen flex bg-[#FFF8F4]" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
