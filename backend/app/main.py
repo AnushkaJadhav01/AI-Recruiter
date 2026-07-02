@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import app.config  # Loads the .env file
 from app.api import linkedin, resume
 
-app = FastAPI(title="AI Recruiter API")
+app = FastAPI(title="AI Recruiter API", root_path="/api")
 
 # Setup CORS for frontend
 app.add_middleware(

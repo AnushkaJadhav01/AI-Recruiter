@@ -9,6 +9,7 @@ _backend = os.path.normpath(_backend)
 if _backend not in sys.path:
     sys.path.insert(0, _backend)
 
+from app.main import app  # noqa: E402
 from mangum import Mangum
 
 handler = Mangum(app)  # Vercel expects a callable named 'handler'
