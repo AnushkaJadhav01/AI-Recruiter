@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import app.config  # Loads the .env file
 from app.api import linkedin, resume
@@ -17,6 +18,11 @@ app.add_middleware(
 app.include_router(linkedin.router, prefix="/api/linkedin", tags=["linkedin"])
 app.include_router(resume.router, prefix="/api/resume", tags=["resume"])
 
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs")
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+

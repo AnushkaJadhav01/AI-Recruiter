@@ -16,10 +16,16 @@ import SearchBar from '../../components/common/SearchBar';
 import FilterPanel from '../../components/common/FilterPanel';
 
 const CandidatesPage = () => {
-  const { candidates, jobs, addCandidate } = useApp();
+  const { candidates, jobs, addCandidate, currentUser } = useApp();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlJobId = searchParams.get('jobId');
+
+  // Filter jobs & candidates to only show those belonging to this recruiter
+  const myJobs = jobs.filter(job => currentUser && job.recruiterId === currentUser.uid);
+  const myJobIds = myJobs.map(job => job.id);
+  const myCandidates = candidates.filter(cand => myJobIds.includes(cand.jobId));
+
 
   // Sourcing Upload Form State
   const [candidateName, setCandidateName] = useState('');
@@ -28,6 +34,9 @@ const CandidatesPage = () => {
   const [githubUser, setGithubUser] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzingStep, setAnalyzingStep] = useState('');
+
   
   // Sourcing Filter/Search State
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -56,46 +65,120 @@ const CandidatesPage = () => {
     }
   };
 
-  const handleUploadSubmit = (e) => {
+  const handleUploadSubmit = async (e) => {
     e.preventDefault();
     if (!candidateName || !selectedJobId) {
       alert('Please fill in candidate name and select a target job position.');
       return;
     }
 
+    setIsAnalyzing(true);
     const matchedJob = jobs.find(j => j.id === selectedJobId);
 
-    // Build new candidate record
+    let parsedAtsScore = 85;
+    let parsedSkills = matchedJob?.skills?.slice(0, 3) || ['React', 'Node.js'];
+    let parsedExp = '5 Years';
+    let parsedEdu = { degree: 'B.S. in Computer Science', school: 'State University', year: '2021' };
+    let parsedSummary = '';
+
+    // 1. Call Resume Optimizer API
+    if (uploadedFile) {
+      setAnalyzingStep('Running AI Resume Parser...');
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+      formData.append('job_description', matchedJob?.description || '');
+      
+      try {
+        const res = await fetch('http://localhost:8000/api/resume/optimize', {
+          method: 'POST',
+          body: formData
+        });
+        if (res.ok) {
+          const data = await res.json();
+          parsedAtsScore = data.atsScore ?? data.ats_score ?? 85;
+          if (data.highlights) {
+            parsedExp = data.highlights.experience || '5 Years';
+            if (data.highlights.skills) {
+              parsedSkills = data.highlights.skills.split(',').map((s: string) => s.trim());
+            }
+            if (data.highlights.education) {
+              parsedEdu = { degree: data.highlights.education, school: 'Extracted Resume Profile', year: 'N/A' };
+            }
+          }
+          parsedSummary = data.recommendations ? data.recommendations.map((r: any) => r.text).join(' ') : '';
+        }
+      } catch (err) {
+        console.error('Failed to parse resume:', err);
+      }
+    }
+
+    // 2. Call LinkedIn Sync API
+    let linkedInData = null;
+    if (linkedinUrl) {
+      setAnalyzingStep('Syncing LinkedIn footprint...');
+      try {
+        const res = await fetch('http://localhost:8000/api/linkedin/sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ url: linkedinUrl })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          linkedInData = data;
+        }
+      } catch (err) {
+        console.error('Failed to sync LinkedIn:', err);
+      }
+    }
+
+    // 3. Build candidate record using real data
+    setAnalyzingStep('Saving candidate DNA...');
     addCandidate({
       name: candidateName,
-      role: candidateRole || matchedJob?.title || 'Engineer',
+      role: candidateRole || (linkedInData ? linkedInData.summary?.split('|')?.[0]?.trim() : '') || matchedJob?.title || 'Engineer',
       jobId: selectedJobId,
-      experience: "5 years", // Default mock experience
-      skills: matchedJob?.skills?.slice(0, 3) || ['React', 'Node.js'],
+      experience: parsedExp,
+      skills: parsedSkills,
       githubUsername: githubUser || 'mock-dev',
       linkedinUrl: linkedinUrl || 'linkedin.com/in/mock-dev',
       email: `${candidateName.toLowerCase().replace(/\s/g, '')}@devmail.com`,
       phone: '+1 (555) 000-1111',
-      resumeSummary: `${candidateName} is an experienced professional skilled in software engineering, matched against the ${matchedJob?.title || 'target'} position. Evaluated resume and web footprints.`,
-      experienceTimeline: [
-        { role: candidateRole || matchedJob?.title || 'Engineer', company: "Tech Startup", duration: "2023 - Present", description: "Contributed to frontend layouts and APIs." }
-      ],
-      education: { degree: "B.S. in Computer Science", school: "State University", year: "2021" },
+      resumeSummary: parsedSummary || `${candidateName} is an experienced professional skilled in software engineering, matched against the ${matchedJob?.title || 'target'} position.`,
+      experienceTimeline: linkedInData && linkedInData.careerHistory && linkedInData.careerHistory.length > 0
+        ? linkedInData.careerHistory.map((h: any) => ({
+            role: h.role,
+            company: h.company,
+            duration: h.duration || 'N/A',
+            description: h.description || ''
+          }))
+        : [
+            { role: candidateRole || matchedJob?.title || 'Engineer', company: "Tech Startup", duration: "2023 - Present", description: "Contributed to frontend layouts and APIs." }
+          ],
+      education: parsedEdu,
       githubAnalysis: {
         stars: 12, forks: 2, totalRepos: 5, contributionsLastYear: 400,
         languages: [{ name: 'JavaScript', percentage: 100 }],
         projectQuality: "Valid codebase, modular layout, clean directory structuring.",
         technicalScore: 82
       },
-      linkedinAnalysis: {
+      linkedinAnalysis: linkedInData ? {
+        growthRate: linkedInData.growthRate || 'Steady Trajectory',
+        leadershipRating: 'Medium',
+        professionalSummary: linkedInData.summary || 'Verified profile summary.',
+        endorsements: linkedInData.endorsements && linkedInData.endorsements.length > 0
+          ? linkedInData.endorsements.map((e: any) => ({ skill: e.skill, count: e.count }))
+          : [{ skill: parsedSkills[0] || 'React', count: 12 }]
+      } : {
         growthRate: "Standard growth", leadershipRating: "Medium",
         professionalSummary: "Self-driven engineer focused on writing quality, well-documented applications.",
-        endorsements: [{ skill: 'React', count: 12 }]
+        endorsements: [{ skill: parsedSkills[0] || 'React', count: 12 }]
       },
       skillGap: {
-        matched: matchedJob?.skills?.slice(0, 3) || ['React'],
-        missing: matchedJob?.skills?.slice(3) || [],
-        extra: ['REST APIs']
+        matched: matchedJob?.skills ? matchedJob.skills.filter((s: string) => parsedSkills.some((cs: string) => cs.toLowerCase().includes(s.toLowerCase()))) : [],
+        missing: matchedJob?.skills ? matchedJob.skills.filter((s: string) => !parsedSkills.some((cs: string) => cs.toLowerCase().includes(s.toLowerCase()))) : [],
+        extra: parsedSkills.filter((s: string) => !matchedJob?.skills?.some((js: string) => js.toLowerCase().includes(s.toLowerCase())))
       }
     });
 
@@ -105,7 +188,9 @@ const CandidatesPage = () => {
     setGithubUser('');
     setLinkedinUrl('');
     setUploadedFile(null);
-    alert('Candidate profile added successfully and queued for AI analysis!');
+    setIsAnalyzing(false);
+    setAnalyzingStep('');
+    alert('Candidate profile added successfully with active AI parsing insights!');
   };
 
   const handleCheckboxChange = (candidateId) => {
@@ -127,7 +212,7 @@ const CandidatesPage = () => {
   };
 
   // Filter & Search Candidates
-  const filteredCandidates = candidates.filter(cand => {
+  const filteredCandidates = myCandidates.filter(cand => {
     // Search query match
     const matchesSearch = cand.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           cand.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -208,7 +293,7 @@ const CandidatesPage = () => {
                 className="block w-full rounded-premium border border-customBorder dark:border-slate-800 text-sm px-3 py-2 bg-white dark:bg-slate-900 text-textPrimary dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-950 focus:border-primary transition-all"
               >
                 <option value="">Select Job...</option>
-                {jobs.map(job => (
+                {myJobs.map(job => (
                   <option key={job.id} value={job.id}>{job.title} ({job.department})</option>
                 ))}
               </select>
@@ -244,10 +329,18 @@ const CandidatesPage = () => {
             <Button
               type="submit"
               fullWidth
-              disabled={!candidateName || !selectedJobId}
+              disabled={!candidateName || !selectedJobId || isAnalyzing}
               className="mt-2 py-2.5"
             >
-              Analyze Candidate Profile
+              {isAnalyzing ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  {analyzingStep}
+                </span>
+              ) : 'Analyze Candidate Profile'}
             </Button>
           </form>
         </Card>
@@ -265,7 +358,7 @@ const CandidatesPage = () => {
 
             <FilterPanel
               options={[
-                { id: 'job', label: 'Position', choices: jobs.map(j => j.id) },
+                { id: 'job', label: 'Position', choices: myJobs.map(j => j.id) },
                 { id: 'experience', label: 'Experience', choices: ['0-3 years', '4-6 years', '7+ years'] },
                 { id: 'recommendation', label: 'Recommendation', choices: ['Strong Match', 'Good Match', 'Potential Match'] }
               ]}

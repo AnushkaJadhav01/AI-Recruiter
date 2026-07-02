@@ -20,18 +20,52 @@ export const JobRecommendationsPage = () => {
   const openJobs = jobs.filter(j => j.status === 'Open')
 
   const handleApply = (jobId: string, jobTitle: string) => {
-    // Register candidate application for this job
+    const resume = currentUser?.resumeAnalysis || {}
+    const highlights = resume.highlights || {}
+    const linkedin = currentUser?.linkedin || {}
+    
+    // Parse skills from resume highlights if present, otherwise fall back to job skills
+    let candidateSkills = ['React', 'Node.js']
+    if (highlights.skills) {
+      candidateSkills = highlights.skills.split(',').map((s: string) => s.trim())
+    } else {
+      const selectedJob = jobs.find(j => j.id === jobId)
+      if (selectedJob && selectedJob.skills) {
+        candidateSkills = selectedJob.skills
+      }
+    }
+
+    // Register candidate application for this job with real data
     addCandidate({
       name: currentUser?.name || 'Applicant',
       email: currentUser?.email || 'applicant@example.com',
       jobId: jobId,
       role: jobTitle,
-      skills: ['React', 'Node.js', 'Figma', 'Python', 'Tailwind CSS', 'SQL'],
+      skills: candidateSkills,
+      experience: highlights.experience || 'N/A',
+      education: highlights.education ? { degree: highlights.education, school: 'Extracted Resume Profile', year: 'N/A' } : null,
       githubUsername: currentUser?.github?.username || '',
       githubData: currentUser?.github || null,
-      linkedinUrl: currentUser?.linkedin?.profileUrl || '',
-      linkedinData: currentUser?.linkedin || null,
-      resumeFileName: currentUser?.resumeAnalysis?.fileName || ''
+      linkedinUrl: linkedin.profileUrl || '',
+      linkedinData: linkedin || null,
+      resumeFileName: resume.fileName || '',
+      atsScore: resume.atsScore || 85,
+      experienceTimeline: linkedin.careerHistory && linkedin.careerHistory.length > 0
+        ? linkedin.careerHistory.map((h: any) => ({
+            role: h.role,
+            company: h.company,
+            duration: h.duration || 'N/A',
+            description: h.description || ''
+          }))
+        : null,
+      linkedinAnalysis: linkedin && Object.keys(linkedin).length > 0 ? {
+        growthRate: linkedin.growthRate || 'Steady Trajectory',
+        leadershipRating: 'Medium',
+        professionalSummary: linkedin.summary || 'Verified profile summary.',
+        endorsements: linkedin.endorsements && linkedin.endorsements.length > 0
+          ? linkedin.endorsements.map((e: any) => ({ skill: e.skill, count: e.count }))
+          : []
+      } : null
     })
     setAppliedJobs(prev => ({ ...prev, [jobId]: true }))
     alert(`Successfully applied to ${jobTitle}!`)

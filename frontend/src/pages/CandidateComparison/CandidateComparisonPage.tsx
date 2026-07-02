@@ -77,38 +77,67 @@ const RadarChart = ({ dataA, dataB, labels }: { dataA: number[], dataB: number[]
 }
 
 export const CandidateComparisonPage = () => {
-  const { candidates } = useApp()
+  const { candidates, jobs, currentUser } = useApp()
   const [candidateA, setCandidateA] = useState('')
   const [candidateB, setCandidateB] = useState('')
 
+  // Filter candidates to only show those belonging to this recruiter's jobs
+  const myJobs = useMemo(() => {
+    return jobs.filter(job => currentUser && job.recruiterId === currentUser.uid)
+  }, [jobs, currentUser])
+
+  const myJobIds = useMemo(() => {
+    return myJobs.map(job => job.id)
+  }, [myJobs])
+
+  const myCandidates = useMemo(() => {
+    return candidates.filter(c => myJobIds.includes(c.jobId))
+  }, [candidates, myJobIds])
+
   // Map database candidates
   const mappedCandidates = useMemo(() => {
-    return candidates.map(c => {
+    return myCandidates.map(c => {
       const gScore = c.githubScore || 80
       const lScore = c.linkedinScore || 80
       const overall = c.overallScore || c.matchScore || 0
+      
+      // Extract nested analysis details
+      const gh = c.githubAnalysis || c.githubData || {}
+      const li = c.linkedinAnalysis || c.linkedinData || {}
+      
+      let eduString = 'CS / Self-Taught'
+      if (c.education) {
+        if (typeof c.education === 'object') {
+          const edu = c.education
+          eduString = edu.degree && edu.school ? `${edu.degree} (${edu.school})` : (edu.degree || edu.school || 'CS / Self-Taught')
+        } else {
+          eduString = String(c.education)
+        }
+      }
       
       return {
         id: c.id,
         name: c.name || 'Candidate',
         role: c.role || 'Software Engineer',
         score: overall,
-        education: c.education || 'CS / Self-Taught',
+        education: eduString,
         skills: c.skills || ['React', 'JavaScript'],
-        exp: c.expScore ? `${Math.floor(c.expScore / 10)} Years` : '5 Years',
+        exp: c.experience || (c.expScore ? `${Math.floor(c.expScore / 10)} Years` : '5 Years'),
         github: { 
-          commits: gScore * 12, 
-          stars: Math.floor(gScore / 2), 
-          repo: c.githubUsername || 'project-repo' 
+          commits: gh.contributionsLastYear || gh.commits || (gScore * 12), 
+          stars: gh.stars || Math.floor(gScore / 2), 
+          repo: c.githubUsername || gh.username || 'project-repo' 
         },
         linkedin: { 
-          tenure: '2.5 Yrs Avg', 
-          connections: `${lScore * 4}` 
+          tenure: li.growthRate || 'Steady Trajectory', 
+          connections: li.endorsements && li.endorsements.length > 0 ? `${li.endorsements[0].count}+ Endorsements` : `${lScore * 4} Connections`
         },
-        history: [
-          { title: c.role || 'Software Engineer', company: 'Previous Firm' },
-          { title: 'Engineer', company: 'Startup Core' }
-        ],
+        history: c.experienceTimeline && c.experienceTimeline.length > 0
+          ? c.experienceTimeline.map((item: any) => ({ title: item.role || item.title || 'Engineer', company: item.company || 'Tech Company' }))
+          : [
+              { title: c.role || 'Software Engineer', company: 'Previous Firm' },
+              { title: 'Engineer', company: 'Startup Core' }
+            ],
         dimensionScores: [
           c.skillsScore || 85,
           c.expScore || 80,
@@ -119,7 +148,7 @@ export const CandidateComparisonPage = () => {
         ]
       }
     })
-  }, [candidates])
+  }, [myCandidates])
 
   // Set default selections once loaded
   useMemo(() => {

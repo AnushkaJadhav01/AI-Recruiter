@@ -11,15 +11,28 @@ import * as XLSX from 'xlsx'
 
 export const RankingsPage = () => {
   const navigate = useNavigate()
-  const { candidates, jobs } = useApp()
+  const { candidates, jobs, currentUser } = useApp()
   const [search, setSearch] = useState('')
   const [selectedRole, setSelectedRole] = useState('all')
   const [sortBy, setSortBy] = useState<'score' | 'name'>('score')
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
+  // Filter jobs to only show those belonging to this recruiter
+  const myJobs = useMemo(() => {
+    return jobs.filter(job => currentUser && job.recruiterId === currentUser.uid)
+  }, [jobs, currentUser])
+
+  const myJobIds = useMemo(() => {
+    return myJobs.map(job => job.id)
+  }, [myJobs])
+
+  const myCandidates = useMemo(() => {
+    return candidates.filter(c => myJobIds.includes(c.jobId))
+  }, [candidates, myJobIds])
+
   // Map candidates from Firebase to expected layout structure
   const items = useMemo(() => {
-    return candidates.map(c => ({
+    return myCandidates.map(c => ({
       id: c.id,
       name: c.name || 'Candidate',
       title: c.role || 'Software Engineer',

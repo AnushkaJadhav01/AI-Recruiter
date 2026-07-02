@@ -20,12 +20,16 @@ const recStyle: Record<string, string> = {
 }
 
 export const DiscoveryPage = () => {
-  const { candidates } = useApp()
+  const { candidates, jobs, currentUser } = useApp()
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState<string | null>(null)
   const [selectedStatus, setSelectedStatus] = useState('Active')
 
-  const filtered = candidates.filter(c => {
+  const myJobs = jobs.filter(job => currentUser && job.recruiterId === currentUser.uid)
+  const myJobIds = myJobs.map(job => job.id)
+  const myCandidates = candidates.filter(c => myJobIds.includes(c.jobId))
+
+  const filtered = myCandidates.filter(c => {
     const matchesSearch = (c.name || 'Candidate').toLowerCase().includes(search.toLowerCase())
     if (selectedStatus === 'Active') {
       return matchesSearch && c.status !== 'Rejected'

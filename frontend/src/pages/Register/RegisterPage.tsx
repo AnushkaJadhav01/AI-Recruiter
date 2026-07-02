@@ -7,7 +7,7 @@ import { ref, set } from "firebase/database";
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FiMail, FiLock, FiArrowLeft, FiUser, FiBriefcase } from 'react-icons/fi'
+import { FiMail, FiLock, FiArrowLeft, FiUser, FiBriefcase, FiEye, FiEyeOff } from 'react-icons/fi'
 import { useApp } from '../../contexts/AppContext'
 
 export const RegisterPage = () => {
@@ -18,8 +18,10 @@ export const RegisterPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState<'Recruiter' | 'Candidate' | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
 
   const handleSubmit = async (e: React.FormEvent) => {
 
@@ -244,12 +246,19 @@ finally {
               <div className="relative">
                 <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[17px] h-[17px] text-[#9CA3AF] group-focus-within:text-[#F97316] transition-colors" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="w-full pl-10 pr-4 py-3 bg-[#FFF8F4] border border-[#F1DDD2] rounded-xl text-sm font-medium text-[#2D2A26] placeholder-[#9CA3AF] focus:outline-none focus:bg-white focus:border-[#FDBA74] focus:ring-4 focus:ring-[#FFF2EA] transition-all"
+                  className="w-full pl-10 pr-10 py-3 bg-[#FFF8F4] border border-[#F1DDD2] rounded-xl text-sm font-medium text-[#2D2A26] placeholder-[#9CA3AF] focus:outline-none focus:bg-white focus:border-[#FDBA74] focus:ring-4 focus:ring-[#FFF2EA] transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#2D2A26] transition-colors"
+                >
+                  {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 

@@ -30,13 +30,17 @@ ChartJS.register(
 import { useApp } from '../../contexts/AppContext'
 
 export const AnalyticsPage = () => {
-  const { candidates } = useApp()
+  const { candidates, jobs, currentUser } = useApp()
   
-  const totalApplied = candidates.length
-  const totalScreened = candidates.filter(c => c.statusStep > 1).length
-  const totalShortlisted = candidates.filter(c => c.statusStep >= 3).length
-  const totalInterviews = candidates.filter(c => c.statusStep >= 4).length
-  const totalHired = candidates.filter(c => c.status === 'Hired').length
+  const myJobs = jobs.filter(job => currentUser && job.recruiterId === currentUser.uid)
+  const myJobIds = myJobs.map(job => job.id)
+  const myCandidates = candidates.filter(c => myJobIds.includes(c.jobId))
+
+  const totalApplied = myCandidates.length
+  const totalScreened = myCandidates.filter(c => c.statusStep > 1).length
+  const totalShortlisted = myCandidates.filter(c => c.statusStep >= 3).length
+  const totalInterviews = myCandidates.filter(c => c.statusStep >= 4).length
+  const totalHired = myCandidates.filter(c => c.status === 'Hired').length
 
   const kpis = [
     { label: 'Total Sourced Candidates', value: totalApplied.toString(), trend: '+5.2%', isPositive: true, icon: FiUsers, color: 'text-blue-600 bg-blue-50 border-blue-100' },

@@ -299,48 +299,59 @@ export const DashboardLayout = () => {
 
   if (currentUser?.role === 'Candidate' && !currentUser?.profileComplete) {
     return (
-      <div className="min-h-screen bg-[#FFF8F4] flex flex-col items-center justify-center p-6 text-left font-sans">
-        <div className="max-w-2xl w-full bg-white border border-[#F1DDD2] rounded-3xl shadow-xl overflow-hidden flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-[#FFF7F2] via-[#FFFDFB] to-[#F3E7DF] flex flex-col items-center justify-center p-6 text-left font-sans">
+        <div className="max-w-2xl w-full bg-white/95 backdrop-blur-md border border-[#F1DDD2] rounded-[32px] shadow-[0_20px_50px_rgba(249,115,22,0.08)] overflow-hidden flex flex-col transition-all duration-300 hover:shadow-[0_24px_60px_rgba(249,115,22,0.12)]">
           {/* Logo & Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-650 p-8 text-white flex justify-between items-center shrink-0">
+          <div className="bg-[#F97316] p-8 text-white flex justify-between items-center shrink-0 border-b border-orange-600/10">
             <div>
-              <h2 className="text-2xl font-extrabold tracking-tight">Setup Your Candidate Profile</h2>
-              <p className="text-xs text-blue-100 mt-1">Complete these quick steps to synchronize your resume and sync socials before applying.</p>
+              <h2 className="text-2xl font-extrabold tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+                Setup Your Candidate Profile
+              </h2>
+              <p className="text-xs text-orange-50 mt-1.5 font-medium">Complete these quick steps to synchronize your resume and sync socials before applying.</p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-4 shrink-0">
               <button
                 onClick={() => {
                   updateUserProfile({ profileComplete: true })
                 }}
-                className="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                className="px-4 py-2 bg-white hover:bg-orange-50 text-[#F97316] hover:text-[#EA580C] rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95 shrink-0"
               >
                 Skip Setup
               </button>
-              <img src="/logo.png" alt="NexHire" className="w-12 h-12 rounded-2xl bg-white/10 p-1 object-contain" />
+              <img src="/logo.png" alt="NexHire" className="w-12 h-12 rounded-2xl bg-white/20 p-1.5 object-contain shadow-inner border border-white/10" />
             </div>
           </div>
 
           {/* Progress Indicators */}
-          <div className="px-8 py-4 bg-gray-50/50 border-b border-gray-100 flex justify-between items-center text-xs font-bold text-gray-400">
-            <span className={setupStep >= 1 ? 'text-blue-600 font-extrabold' : ''}>1. Basic Info</span>
-            <span className="text-gray-305">➔</span>
-            <span className={setupStep >= 2 ? 'text-blue-600 font-extrabold' : ''}>2. Github & LinkedIn</span>
-            <span className="text-gray-350">➔</span>
-            <span className={setupStep >= 3 ? 'text-blue-600 font-extrabold' : ''}>3. Upload Resume</span>
+          <div className="px-8 py-4 bg-orange-50/15 border-b border-orange-100/20 flex justify-between items-center text-xs font-bold text-gray-400 select-none">
+            <span className={`flex items-center gap-2 ${setupStep >= 1 ? 'text-[#EA580C] font-extrabold' : ''}`}>
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${setupStep >= 1 ? 'bg-[#F97316] text-white' : 'bg-gray-200 text-gray-400'}`}>1</span>
+              Basic Info
+            </span>
+            <span className="text-gray-300">➔</span>
+            <span className={`flex items-center gap-2 ${setupStep >= 2 ? 'text-[#EA580C] font-extrabold' : ''}`}>
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${setupStep >= 2 ? 'bg-[#F97316] text-white' : 'bg-gray-200 text-gray-400'}`}>2</span>
+              Github & LinkedIn
+            </span>
+            <span className="text-gray-300">➔</span>
+            <span className={`flex items-center gap-2 ${setupStep >= 3 ? 'text-[#EA580C] font-extrabold' : ''}`}>
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${setupStep >= 3 ? 'bg-[#F97316] text-white' : 'bg-gray-200 text-gray-400'}`}>3</span>
+              Upload Resume
+            </span>
           </div>
 
           {/* Body Content */}
           <div className="p-8 flex-1 min-h-[300px]">
             {savingSetup ? (
               <div className="flex flex-col items-center justify-center py-12 space-y-4 text-center h-full">
-                <FiCpu className="w-12 h-12 text-blue-600 animate-spin" />
+                <FiCpu className="w-12 h-12 text-[#F97316] animate-spin" />
                 <h4 className="font-extrabold text-gray-900 text-sm">Processing Profile Setup</h4>
                 <p className="text-xs text-gray-500 font-semibold">{setupMessage}</p>
               </div>
             ) : (
               <>
                 {setupStep === 1 && (
-                  <div className="space-y-4">
+                  <div className="space-y-4 animate-fadeIn">
                     <h3 className="font-extrabold text-sm text-gray-900 border-b border-gray-100 pb-2">Profile & Contact Information</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5 text-xs">
@@ -350,7 +361,7 @@ export const DashboardLayout = () => {
                           value={setupPhone}
                           onChange={(e) => setSetupPhone(e.target.value)}
                           placeholder="+1 (555) 0199"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#F97316] transition-all font-medium text-gray-800"
+                          className="w-full px-4 py-2.5 border border-orange-100 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-[#F97316] transition-all font-medium text-gray-800 bg-orange-50/5"
                         />
                       </div>
                       <div className="space-y-1.5 text-xs">
@@ -360,7 +371,7 @@ export const DashboardLayout = () => {
                           value={setupLocation}
                           onChange={(e) => setSetupLocation(e.target.value)}
                           placeholder="San Francisco, CA (Remote)"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#F97316] transition-all font-medium text-gray-800"
+                          className="w-full px-4 py-2.5 border border-orange-100 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-[#F97316] transition-all font-medium text-gray-800 bg-orange-50/5"
                         />
                       </div>
                       <div className="space-y-1.5 text-xs sm:col-span-2">
@@ -370,7 +381,7 @@ export const DashboardLayout = () => {
                           value={setupRole}
                           onChange={(e) => setSetupRole(e.target.value)}
                           placeholder="Senior Full-Stack Developer"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#F97316] transition-all font-medium text-gray-800"
+                          className="w-full px-4 py-2.5 border border-orange-100 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-[#F97316] transition-all font-medium text-gray-800 bg-orange-50/5"
                         />
                       </div>
                     </div>
@@ -378,7 +389,7 @@ export const DashboardLayout = () => {
                 )}
 
                 {setupStep === 2 && (
-                  <div className="space-y-4">
+                  <div className="space-y-4 animate-fadeIn">
                     <h3 className="font-extrabold text-sm text-gray-900 border-b border-gray-100 pb-2">Sync Technical Socials</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5 text-xs">
@@ -388,7 +399,7 @@ export const DashboardLayout = () => {
                           value={setupGithub}
                           onChange={(e) => setSetupGithub(e.target.value)}
                           placeholder="e.g. alexmercer"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#F97316] transition-all font-medium text-gray-800"
+                          className="w-full px-4 py-2.5 border border-orange-100 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-[#F97316] transition-all font-medium text-gray-800 bg-orange-50/5"
                         />
                         {(currentUser?.github?.username || currentUser?.githubUsername) && (
                           <div className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-1 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100/50 w-fit">
@@ -403,7 +414,7 @@ export const DashboardLayout = () => {
                           value={setupLinkedin}
                           onChange={(e) => setSetupLinkedin(e.target.value)}
                           placeholder="https://linkedin.com/in/alex-mercer"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#F97316] transition-all font-medium text-gray-800"
+                          className="w-full px-4 py-2.5 border border-orange-100 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-[#F97316] transition-all font-medium text-gray-800 bg-orange-50/5"
                         />
                         {(currentUser?.linkedin?.profileUrl || currentUser?.linkedinUrl) && (
                           <div className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-1 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100/50 w-fit">
@@ -416,13 +427,13 @@ export const DashboardLayout = () => {
                 )}
 
                 {setupStep === 3 && (
-                  <div className="space-y-4">
+                  <div className="space-y-4 animate-fadeIn">
                     <h3 className="font-extrabold text-sm text-gray-900 border-b border-gray-100 pb-2">Upload Professional Resume</h3>
                     <div className="space-y-4">
-                      <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center flex flex-col items-center justify-center space-y-3 bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                        <FiFileText className="w-10 h-10 text-gray-400" />
+                      <div className="border-2 border-dashed border-orange-200 hover:border-orange-500 rounded-2xl p-8 text-center flex flex-col items-center justify-center space-y-3 bg-orange-50/5 hover:bg-orange-50/20 transition-all cursor-pointer group">
+                        <FiFileText className="w-10 h-10 text-orange-400 group-hover:scale-110 transition-transform" />
                         <div className="text-xs">
-                          <label className="cursor-pointer font-bold text-blue-600 hover:underline">
+                          <label className="cursor-pointer font-bold text-orange-600 hover:underline">
                             Choose PDF or Word Document
                             <input
                               type="file"
@@ -437,7 +448,7 @@ export const DashboardLayout = () => {
                               }}
                             />
                           </label>
-                          <p className="text-[10px] text-gray-450 mt-1 font-semibold">Max file size 5MB</p>
+                          <p className="text-[10px] text-gray-400 mt-1 font-semibold">Max file size 5MB</p>
                         </div>
                       </div>
 
@@ -448,7 +459,7 @@ export const DashboardLayout = () => {
                             <span className="truncate">{setupResumeName}</span>
                           </div>
                           {(currentUser?.resumeAnalysis?.fileName || currentUser?.resumeName) && (
-                            <span className="text-[9px] text-emerald-755 bg-emerald-100/60 border border-emerald-250 px-2 py-0.5 rounded font-bold uppercase shrink-0">
+                            <span className="text-[9px] text-emerald-700 bg-emerald-100/60 border border-emerald-200 px-2 py-0.5 rounded font-bold uppercase shrink-0">
                               Synced from Analyzer
                             </span>
                           )}
@@ -463,12 +474,12 @@ export const DashboardLayout = () => {
 
           {/* Navigation Controls */}
           {!savingSetup && (
-            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex justify-between items-center shrink-0">
+            <div className="p-6 bg-gray-50/50 border-t border-gray-150 flex justify-between items-center shrink-0">
               <Button
                 variant="outline"
                 disabled={setupStep === 1}
                 onClick={() => setSetupStep(prev => prev - 1)}
-                className="text-xs font-semibold"
+                className="text-xs font-semibold px-4 py-2 border-orange-200 text-orange-700 hover:bg-orange-50 rounded-xl"
               >
                 Back
               </Button>
@@ -478,9 +489,17 @@ export const DashboardLayout = () => {
                     logoutUser();
                     navigate('/login');
                   }}
-                  className="px-3 py-1.5 text-xs text-red-500 hover:text-red-700 font-bold uppercase transition-colors mr-2 hover:bg-red-50 rounded"
+                  className="px-3 py-1.5 text-xs text-red-500 hover:text-red-700 font-bold uppercase transition-colors mr-2 hover:bg-red-50 rounded-xl"
                 >
                   Logout
+                </button>
+                <button
+                  onClick={() => {
+                    updateUserProfile({ profileComplete: true })
+                  }}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-650 hover:text-gray-800 rounded-xl text-xs font-bold transition-all shadow-sm mr-1.5"
+                >
+                  Skip Setup
                 </button>
                 {setupStep < 3 ? (
                   <Button
@@ -495,15 +514,15 @@ export const DashboardLayout = () => {
                       }
                       setSetupStep(prev => prev + 1)
                     }}
-                    className="text-xs font-semibold"
+                    className="text-xs font-semibold px-5 py-2 bg-[#F97316] hover:bg-[#EA580C] text-white rounded-xl shadow-md"
                   >
                     Continue
                   </Button>
                 ) : (
                   <Button
-                    disabled={!setupResumeFile}
+                    disabled={!setupResumeFile && !setupResumeName}
                     onClick={handleCompleteSetup}
-                    className="text-xs font-semibold"
+                    className="text-xs font-bold px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl shadow-md hover:shadow-lg hover:shadow-orange-500/20"
                   >
                     Complete Setup
                   </Button>
@@ -582,14 +601,6 @@ export const DashboardLayout = () => {
                 </div>
               )}
             </div>
-            {!collapsed && (
-              <button 
-                onClick={handleToggleRole}
-                className="w-full text-center py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase rounded-lg transition-colors mt-1"
-              >
-                🔄 Switch to {currentUser?.role === 'Candidate' ? 'Recruiter' : 'Candidate'}
-              </button>
-            )}
           </div>
         </div>
       </motion.aside>
@@ -653,12 +664,6 @@ export const DashboardLayout = () => {
                     <p className="text-xs text-gray-500">{currentUser?.role || 'Recruiter'}</p>
                   </div>
                 </div>
-                <button 
-                  onClick={handleToggleRole}
-                  className="w-full text-center py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase rounded-lg transition-colors mt-1"
-                >
-                  🔄 Switch to {currentUser?.role === 'Candidate' ? 'Recruiter' : 'Candidate'}
-                </button>
               </div>
             </motion.aside>
           </>

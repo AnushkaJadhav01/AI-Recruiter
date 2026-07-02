@@ -7,9 +7,17 @@ type DrawerProps = {
   onClose: () => void
   title: string
   children: React.ReactNode
+  size?: 'sm' | 'md' | 'lg' | string
 }
 
-export const Drawer = ({ isOpen, onClose, title, children }: DrawerProps) => {
+const sizeClasses: Record<string, string> = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg'
+}
+
+export const Drawer = ({ isOpen, onClose, title, children, size = 'md' }: DrawerProps) => {
+  const maxClass = sizeClasses[size] || 'max-w-md'
   return (
     <AnimatePresence>
       {isOpen && (
@@ -30,7 +38,7 @@ export const Drawer = ({ isOpen, onClose, title, children }: DrawerProps) => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-              className="w-screen max-w-md bg-white border-l border-gray-100 shadow-2xl flex flex-col"
+              className={`w-screen ${maxClass} bg-white border-l border-gray-100 shadow-2xl flex flex-col`}
             >
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-[#F1DDD2] bg-white shrink-0">

@@ -107,8 +107,7 @@ const JobsPage = () => {
   };
 
   const filteredJobs = jobs.filter(job => {
-    // Only show jobs owned by this recruiter
-    if (job.recruiterId && currentUser && job.recruiterId !== currentUser.uid) {
+    if (currentUser && job.recruiterId !== currentUser.uid) {
       return false;
     }
     if (filterStatus === 'All') return true;

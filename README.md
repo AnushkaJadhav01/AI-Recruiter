@@ -9,7 +9,7 @@ An AI-powered recruiting platform designed for resume screening, ATS (Applicant 
 * **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS + Framer Motion
 * **Backend:** FastAPI + Python 3.x + Uvicorn
 * **Database & Auth:** Firebase Authentication & Realtime Database
-* **AI/ML:** Gemini API (via `google-generativeai`), embeddings, and candidate ranking algorithms
+* **AI/ML:** HuggingFace Hub & Transformers, Sentence-Transformers (for semantic profile mapping), Scikit-Learn (for similarity scoring & TF-IDF), LangChain (for agent orchestration), and vector embeddings for multi-agent candidate evaluation
 * **Data Integration:** Apify API (LinkedIn Profile Scraper)
 
 ---
