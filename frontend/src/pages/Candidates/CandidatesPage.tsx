@@ -89,7 +89,8 @@ const CandidatesPage = () => {
       formData.append('job_description', matchedJob?.description || '');
       
       try {
-        const res = await fetch('http://localhost:8000/api/resume/optimize', {
+        const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+        const res = await fetch(`${apiBase}/api/resume/optimize`, {
           method: 'POST',
           body: formData
         });
@@ -117,7 +118,8 @@ const CandidatesPage = () => {
     if (linkedinUrl) {
       setAnalyzingStep('Syncing LinkedIn footprint...');
       try {
-        const res = await fetch('http://localhost:8000/api/linkedin/sync', {
+        const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+        const res = await fetch(`${apiBase}/api/linkedin/sync`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

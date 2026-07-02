@@ -78,7 +78,8 @@ export const ResumeAnalysisPage = () => {
       formData.append('file', file)
       formData.append('job_description', jobDescription)
 
-      const response = await fetch('http://localhost:8000/api/resume/optimize', {
+      const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${apiBase}/api/resume/optimize`, {
         method: 'POST',
         body: formData
       })

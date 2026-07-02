@@ -46,7 +46,8 @@ export const LinkedInSyncPage = () => {
     setErrorMsg('')
 
     try {
-      const response = await fetch('http://localhost:8000/api/linkedin/sync', {
+      const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${apiBase}/api/linkedin/sync`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
