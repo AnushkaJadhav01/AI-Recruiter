@@ -9,6 +9,7 @@ type ButtonProps = {
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   className?: string
+  fullWidth?: boolean
 }
 
 export const Button = ({
@@ -19,6 +20,7 @@ export const Button = ({
   type = 'button',
   disabled = false,
   className = '',
+  fullWidth = false,
 }: ButtonProps) => {
   const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0'
   
@@ -43,7 +45,7 @@ export const Button = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${fullWidth ? 'w-full' : ''} ${className}`}
     >
       {children}
     </motion.button>

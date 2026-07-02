@@ -74,8 +74,8 @@ export const LoginPage = () => {
         {/* Logo */}
         <div className="relative z-10">
           <Link to="/" className="inline-flex items-center gap-3">
-            <img src="/logo.png" alt="NexHire" className="w-9 h-9 rounded-xl object-contain bg-white shadow-sm border border-white/80" />
-            <span className="text-xl font-bold tracking-tight text-[#2D2A26]">NexHire</span>
+            <img src="/logo.png" alt="Candidate360" className="w-9 h-9 rounded-xl object-contain bg-white shadow-sm border border-white/80" />
+            <span className="text-xl font-bold tracking-tight text-[#2D2A26]">Candidate360</span>
           </Link>
         </div>
 
@@ -110,7 +110,7 @@ export const LoginPage = () => {
 
         {/* Footer */}
         <div className="relative z-10 text-[11px] text-[#9CA3AF] font-medium">
-          © {new Date().getFullYear()} NexHire Technologies ·{' '}
+          © {new Date().getFullYear()} Candidate360 Technologies ·{' '}
           <Link to="/privacy" className="hover:text-[#F97316] transition-colors">Privacy Policy</Link>
           {' · '}
           <Link to="/terms" className="hover:text-[#F97316] transition-colors">Terms of Service</Link>
@@ -128,8 +128,8 @@ export const LoginPage = () => {
         {/* Mobile logo */}
         <div className="lg:hidden mb-10">
           <Link to="/" className="inline-flex items-center gap-3">
-            <img src="/logo.png" alt="NexHire" className="w-9 h-9 rounded-xl object-contain border border-gray-100 shadow-sm" />
-            <span className="text-xl font-bold tracking-tight text-[#2D2A26]">NexHire</span>
+            <img src="/logo.png" alt="Candidate360" className="w-9 h-9 rounded-xl object-contain border border-gray-100 shadow-sm" />
+            <span className="text-xl font-bold tracking-tight text-[#2D2A26]">Candidate360</span>
           </Link>
         </div>
 
@@ -142,7 +142,7 @@ export const LoginPage = () => {
           {/* Heading */}
           <div className="mb-9">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#2D2A26] tracking-tight mb-2">Welcome Back</h2>
-            <p className="text-sm text-[#6B7280] font-medium">Sign in to your NexHire account to continue.</p>
+            <p className="text-sm text-[#6B7280] font-medium">Sign in to your Candidate360 account to continue.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

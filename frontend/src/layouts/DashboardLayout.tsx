@@ -318,7 +318,7 @@ export const DashboardLayout = () => {
               >
                 Skip Setup
               </button>
-              <img src="/logo.png" alt="NexHire" className="w-12 h-12 rounded-2xl bg-white/20 p-1.5 object-contain shadow-inner border border-white/10" />
+              <img src="/logo.png" alt="Candidate360" className="w-12 h-12 rounded-2xl bg-white/20 p-1.5 object-contain shadow-inner border border-white/10" />
             </div>
           </div>
 
@@ -546,9 +546,9 @@ export const DashboardLayout = () => {
         {/* Logo Section */}
         <div className="h-16 flex items-center gap-3 px-6 border-b border-[#F1DDD2]">
           <Link to="/dashboard" className="flex items-center gap-3 font-semibold text-lg">
-            <img src="/logo.png" alt="NexHire" className="w-8 h-8 rounded-lg object-contain" />
+            <img src="/logo.png" alt="Candidate360" className="w-8 h-8 rounded-lg object-contain" />
             {!collapsed && (
-              <span className="text-gray-900 font-bold tracking-tight">NexHire</span>
+              <span className="text-gray-900 font-bold tracking-tight">Candidate360</span>
             )}
           </Link>
         </div>
@@ -626,8 +626,8 @@ export const DashboardLayout = () => {
             >
               <div className="h-16 flex items-center justify-between px-6 border-b border-[#F1DDD2]">
                 <Link to="/dashboard" className="flex items-center gap-3 font-semibold text-lg">
-                  <img src="/logo.png" alt="NexHire" className="w-8 h-8 rounded-lg object-contain" />
-                  <span className="text-gray-900 font-bold tracking-tight">NexHire</span>
+                  <img src="/logo.png" alt="Candidate360" className="w-8 h-8 rounded-lg object-contain" />
+                  <span className="text-gray-900 font-bold tracking-tight">Candidate360</span>
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="text-gray-500 hover:text-gray-800">
                   <FiX className="w-6 h-6" />
@@ -832,7 +832,7 @@ export const DashboardLayout = () => {
         
         {/* Footer */}
         <footer className="text-center py-6 text-[10px] text-gray-400 border-t border-[#F1DDD2] bg-[#FFF8F4]">
-          © {new Date().getFullYear()} NexHire Technologies Inc. All rights reserved. Enterprise SaaS Recruiter Workspace.
+          © {new Date().getFullYear()} Candidate360 Technologies Inc. All rights reserved. Enterprise SaaS Recruiter Workspace.
         </footer>
       </div>
 

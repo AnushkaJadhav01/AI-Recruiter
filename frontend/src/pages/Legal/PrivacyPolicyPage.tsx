@@ -17,8 +17,8 @@ export const PrivacyPolicyPage = () => (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-[#F1DDD2]">
       <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
         <Link to="/" className="inline-flex items-center gap-2.5">
-          <img src="/logo.png" alt="NexHire" className="w-7 h-7 rounded-lg object-contain border border-gray-100 bg-white shadow-sm" />
-          <span className="font-bold text-[#2D2A26] tracking-tight">NexHire</span>
+          <img src="/logo.png" alt="Candidate360" className="w-7 h-7 rounded-lg object-contain border border-gray-100 bg-white shadow-sm" />
+          <span className="font-bold text-[#2D2A26] tracking-tight">Candidate360</span>
         </Link>
         <Link to="/" className="flex items-center gap-1.5 text-xs font-semibold text-[#6B7280] hover:text-[#2D2A26] transition-colors">
           <FiArrowLeft className="w-3.5 h-3.5" /> Back to home
@@ -37,7 +37,7 @@ export const PrivacyPolicyPage = () => (
           </div>
           <h1 className="text-4xl font-extrabold text-[#2D2A26] tracking-tight mb-4">Your Privacy Matters</h1>
           <p className="text-base text-[#6B7280] leading-relaxed max-w-2xl">
-            This Privacy Policy explains how NexHire Technologies collects, uses, and protects your personal information when you use our AI-powered recruitment platform.
+            This Privacy Policy explains how Candidate360 Technologies collects, uses, and protects your personal information when you use our AI-powered recruitment platform.
           </p>
           <p className="text-xs text-[#9CA3AF] font-medium mt-4">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
@@ -54,7 +54,7 @@ export const PrivacyPolicyPage = () => (
           <Section title="2. How We Use Your Information">
             <p>We use the information we collect to provide, maintain, and improve our services, including:</p>
             <ul className="list-disc pl-5 space-y-1.5">
-              <li>Operating and personalizing the NexHire platform for recruiters and candidates.</li>
+              <li>Operating and personalizing the Candidate360 platform for recruiters and candidates.</li>
               <li>Running AI-powered analysis including Candidate DNA extraction and Evidence Graph generation.</li>
               <li>Matching candidates to relevant job opportunities using autonomous AI agents.</li>
               <li>Sending product updates, security alerts, and support messages.</li>
@@ -63,7 +63,7 @@ export const PrivacyPolicyPage = () => (
           </Section>
 
           <Section title="3. AI Processing and Candidate Data">
-            <p>NexHire uses large language model (LLM) pipelines to analyze resumes and online profiles. This processing is used solely to generate structured skill summaries and match scores within our platform.</p>
+            <p>Candidate360 uses large language model (LLM) pipelines to analyze resumes and online profiles. This processing is used solely to generate structured skill summaries and match scores within our platform.</p>
             <p>We do not sell your resume data or personal profile information to third parties. AI-generated candidate scores are for internal platform use only and are visible only to recruiters you have applied to or been matched with.</p>
           </Section>
 
@@ -84,11 +84,11 @@ export const PrivacyPolicyPage = () => (
           </Section>
 
           <Section title="8. Your Rights">
-            <p>Depending on your jurisdiction, you may have the right to access, correct, or delete your personal data. You may also object to or restrict certain types of processing. To exercise these rights, contact us at <a href="mailto:privacy@nexhire.ai" className="text-[#F97316] hover:underline font-semibold">privacy@nexhire.ai</a>.</p>
+            <p>Depending on your jurisdiction, you may have the right to access, correct, or delete your personal data. You may also object to or restrict certain types of processing. To exercise these rights, contact us at <a href="mailto:privacy@candidate360.ai" className="text-[#F97316] hover:underline font-semibold">privacy@candidate360.ai</a>.</p>
           </Section>
 
           <Section title="9. Children's Privacy">
-            <p>NexHire is not intended for individuals under the age of 16. We do not knowingly collect personal information from children. If you believe a child has provided us with data, please contact us immediately.</p>
+            <p>Candidate360 is not intended for individuals under the age of 16. We do not knowingly collect personal information from children. If you believe a child has provided us with data, please contact us immediately.</p>
           </Section>
 
           <Section title="10. Changes to This Policy">
@@ -97,9 +97,9 @@ export const PrivacyPolicyPage = () => (
 
           <Section title="11. Contact Us">
             <p>If you have questions about this Privacy Policy, please contact us at:</p>
-            <p><strong className="text-[#2D2A26]">NexHire Technologies</strong><br />
-            Email: <a href="mailto:privacy@nexhire.ai" className="text-[#F97316] hover:underline font-semibold">privacy@nexhire.ai</a><br />
-            Website: <a href="https://nexhire.ai" className="text-[#F97316] hover:underline font-semibold">nexhire.ai</a></p>
+            <p><strong className="text-[#2D2A26]">Candidate360 Technologies</strong><br />
+            Email: <a href="mailto:privacy@candidate360.ai" className="text-[#F97316] hover:underline font-semibold">privacy@candidate360.ai</a><br />
+            Website: <a href="https://candidate360.ai" className="text-[#F97316] hover:underline font-semibold">candidate360.ai</a></p>
           </Section>
 
         </div>

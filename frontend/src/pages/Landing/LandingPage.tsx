@@ -89,8 +89,8 @@ export const LandingPage = () => {
             <div>
               {/* PRESERVED: Logo and Title */}
               <Link to="/" className="flex items-center gap-3 font-semibold text-lg">
-                <img src="/logo.png" alt="NexHire Logo" className="w-8 h-8 rounded-lg object-contain" />
-                <span className="text-gray-900 font-bold tracking-tight">NexHire</span>
+                <img src="/logo.png" alt="Candidate360 Logo" className="w-8 h-8 rounded-lg object-contain" />
+                <span className="text-gray-900 font-bold tracking-tight">Candidate360</span>
               </Link>
             </div>
             {/* PRESERVED: Desktop Links */}
@@ -176,7 +176,7 @@ export const LandingPage = () => {
               variants={fadeInUp}
               className="text-sm md:text-base text-[#6B7280] leading-relaxed"
             >
-              Move beyond manual resume screening. NexHire uses an advanced multi-agent pipeline to extract Candidate DNA, build Evidence Graphs, and deliver an AI-ranked shortlist instantly.
+              Move beyond manual resume screening. Candidate360 uses an advanced multi-agent pipeline to extract Candidate DNA, build Evidence Graphs, and deliver an AI-ranked shortlist instantly.
             </motion.p>
             <motion.div 
               variants={fadeInUp}
@@ -363,7 +363,7 @@ export const LandingPage = () => {
         <div className="max-w-7xl mx-auto space-y-16">
           <motion.div variants={fadeInUp} className="text-center max-w-2xl mx-auto space-y-4">
             <h2 className="text-3xl font-extrabold tracking-tight text-[#2D2A26] sm:text-4xl">
-              How NexHire Works
+              How Candidate360 Works
             </h2>
             <p className="text-sm text-[#6B7280] leading-relaxed font-medium">
               A seamless pipeline from candidate sourcing to final decision.
@@ -431,8 +431,8 @@ export const LandingPage = () => {
           {/* Logo Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 font-semibold text-lg text-white">
-              <img src="/logo.png" alt="NexHire Logo" className="w-8 h-8 rounded-lg object-contain" />
-              <span className="tracking-tight font-bold">NexHire</span>
+              <img src="/logo.png" alt="Candidate360 Logo" className="w-8 h-8 rounded-lg object-contain" />
+              <span className="tracking-tight font-bold">Candidate360</span>
             </div>
             <p className="text-[11px] leading-relaxed text-[#D6D3D1] font-medium max-w-xs">
               Next-generation talent intelligence platform leveraging multi-agent evaluation pipelines to extract Candidate DNA and evidence validation.
@@ -440,7 +440,7 @@ export const LandingPage = () => {
             <div className="pt-3 space-y-2 text-[11px] text-[#A8A29E] font-medium">
               <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-4">Contact Us</h4>
               <p className="flex items-center gap-2">
-                <span className="text-[#F97316] text-xs">📧</span> contact@nexhire.ai
+                <span className="text-[#F97316] text-xs">📧</span> contact@candidate360.ai
               </p>
             </div>
           </div>
@@ -487,7 +487,7 @@ export const LandingPage = () => {
 
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-[10px]">
           <div>
-            <p>© 2026 NexHire. All rights reserved. Enterprise Recruiting Intelligence.</p>
+            <p>© 2026 Candidate360. All rights reserved. Enterprise Recruiting Intelligence.</p>
           </div>
           <div className="flex gap-6">
             <Link to="/privacy" className="hover:text-[#FDBA74] transition-colors">Privacy Policy</Link>

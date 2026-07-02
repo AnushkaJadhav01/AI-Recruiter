@@ -1,6 +1,6 @@
-# AI Recruiter 🚀
+# Candidate360 🚀
 
-An AI-powered recruiting platform designed for resume screening, ATS (Applicant Tracking System) optimization, LinkedIn profile syncing, and candidate ranking.
+Candidate360 is an AI-powered recruiting platform designed for resume screening, ATS (Applicant Tracking System) optimization, LinkedIn profile syncing, and candidate ranking.
 
 ---
 

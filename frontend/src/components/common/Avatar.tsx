@@ -1,11 +1,18 @@
 import React from 'react';
 
+interface AvatarProps {
+  src?: string;
+  name?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+}
+
 const Avatar = ({
   src,
   name,
   size = 'md',
   className = '',
-}) => {
+}: AvatarProps) => {
   const sizes = {
     xs: 'h-6 w-6 text-[10px]',
     sm: 'h-8 w-8 text-xs',
@@ -32,7 +39,7 @@ const Avatar = ({
           alt={name || 'Avatar'}
           className="h-full w-full object-cover"
           onError={(e) => {
-            e.target.style.display = 'none';
+            (e.currentTarget as HTMLImageElement).style.display = 'none';
           }}
         />
       ) : (
