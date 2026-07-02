@@ -5,7 +5,7 @@
   "installCommand": "npm --prefix frontend install",
   "routes": [
     {
-      "src": "/api",
+      "src": "/api$",
       "dest": "/api/index.py"
     },
     {
