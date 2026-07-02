@@ -1,7 +1,12 @@
 import sys
 import os
 
-# Add the 'backend' folder to the python search path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend")))
+# Resolve the backend directory robustly for both local dev and Vercel serverless
+_here = os.path.dirname(os.path.abspath(__file__))
+_backend = os.path.join(_here, "..", "backend")
+_backend = os.path.normpath(_backend)
 
-from app.main import app  # type: ignore
+if _backend not in sys.path:
+    sys.path.insert(0, _backend)
+
+from app.main import app  # noqa: E402 (type: ignore)
