@@ -6,99 +6,39 @@ import {
   FiArrowRight, FiChevronDown, FiChevronUp,
   FiGithub, FiLinkedin, FiFileText
 } from 'react-icons/fi'
+import { useApp } from '../../contexts/AppContext'
 
 type Recommendation = 'Strong Fit' | 'Worth a Chat' | 'Needs Review'
 
-const recStyle: Record<Recommendation, string> = {
+const recStyle: Record<string, string> = {
   'Strong Fit':   'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  'Strong Hire':  'bg-emerald-50 text-emerald-700 border border-emerald-200',
   'Worth a Chat': 'bg-blue-50   text-blue-700   border border-blue-200',
+  'Hire':         'bg-blue-50   text-blue-700   border border-blue-200',
+  'Consider':     'bg-amber-50  text-amber-700  border border-amber-200',
   'Needs Review': 'bg-amber-50  text-amber-700  border border-amber-200',
 }
 
-const candidates: {
-  id: number; name: string; role: string; location: string;
-  matchScore: number; resume: number; github: number; linkedin: number; projects: number;
-  recommendation: Recommendation; note: string;
-}[] = [
-  {
-    id: 1, name: 'Sarah Jenkins', role: 'Senior React Developer', location: 'San Francisco, CA',
-    matchScore: 96, resume: 98, github: 95, linkedin: 90, projects: 92,
-    recommendation: 'Strong Fit',
-    note: "Sarah's experience closely matches what you described in the job post. Her open-source work and project history show solid depth in React and Next.js. Highly recommend a first call."
-  },
-  {
-    id: 2, name: 'David Chen', role: 'Frontend Engineer', location: 'Remote',
-    matchScore: 84, resume: 88, github: 75, linkedin: 85, projects: 80,
-    recommendation: 'Worth a Chat',
-    note: "David has a good foundation and strong communication indicators. He may need to build up Next.js production experience, but his communication in open-source reviews is above average. Worth a conversation."
-  },
-  {
-    id: 3, name: 'Elena Rodriguez', role: 'Full Stack Developer', location: 'Austin, TX',
-    matchScore: 91, resume: 90, github: 98, linkedin: 85, projects: 95,
-    recommendation: 'Strong Fit',
-    note: "Elena's GitHub activity is exceptional — among the top profiles we've seen for this role. Her project breadth and consistency make her a very strong candidate for your consideration."
-  },
-]
-
 export const DiscoveryPage = () => {
-  const [expanded, setExpanded] = useState<number | null>(null)
+  const { candidates } = useApp()
   const [search, setSearch] = useState('')
-  const [minScore, setMinScore] = useState(70)
+  const [expanded, setExpanded] = useState<string | null>(null)
+  const [selectedStatus, setSelectedStatus] = useState('Active')
 
-  const filtered = candidates.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) &&
-    c.matchScore >= minScore
-  )
+  const filtered = candidates.filter(c => {
+    const matchesSearch = (c.name || 'Candidate').toLowerCase().includes(search.toLowerCase())
+    if (selectedStatus === 'Active') {
+      return matchesSearch && c.status !== 'Rejected'
+    } else {
+      return matchesSearch && (
+        c.status === selectedStatus || 
+        (selectedStatus === 'Interviewing' && (c.status === 'Interview Scheduled' || c.status === 'Interviewing'))
+      )
+    }
+  })
 
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden -mx-6 md:-mx-8 mt-[-32px]">
-
-      {/* Filter Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-[#F1DDD2] h-full overflow-y-auto shrink-0 p-6 gap-6">
-        <div className="flex items-center gap-2 text-[#2D2A26]">
-          <FiFilter className="w-4 h-4 text-[#9CA3AF]" />
-          <h3 className="font-semibold text-sm">Filter Candidates</h3>
-        </div>
-
-        {/* Min Score */}
-        <div>
-          <label className="block text-xs font-semibold text-[#6B7280] mb-2">
-            Minimum match: <span className="text-[#F97316] font-bold">{minScore}%+</span>
-          </label>
-          <input
-            type="range" min="0" max="100" value={minScore}
-            onChange={e => setMinScore(Number(e.target.value))}
-            className="w-full accent-[#F97316] h-1.5 cursor-pointer"
-          />
-          <div className="flex justify-between text-[10px] text-[#9CA3AF] mt-1.5">
-            <span>0%</span><span>100%</span>
-          </div>
-        </div>
-
-        <div className="border-t border-[#F1DDD2]" />
-
-        {/* Skills */}
-        <div>
-          <label className="block text-xs font-semibold text-[#6B7280] mb-2">Skills to look for</label>
-          <div className="flex flex-wrap gap-1.5">
-            {['React', 'Next.js', 'TypeScript'].map(s => (
-              <span key={s} className="px-2.5 py-1 bg-[#FFF2EA] text-[#F97316] border border-[#FDBA74] text-[11px] font-semibold rounded-full">{s}</span>
-            ))}
-            <button className="px-2.5 py-1 bg-gray-50 text-[#9CA3AF] border border-dashed border-gray-300 text-[11px] font-semibold rounded-full hover:bg-gray-100 transition-colors">+ Add</button>
-          </div>
-        </div>
-
-        <div className="border-t border-[#F1DDD2]" />
-
-        {/* Experience */}
-        <div>
-          <label className="block text-xs font-semibold text-[#6B7280] mb-2">Experience (years)</label>
-          <div className="grid grid-cols-2 gap-2">
-            <input type="number" placeholder="Min" className="px-3 py-2 border border-[#F1DDD2] rounded-xl text-xs bg-[#FFF8F4] focus:outline-none focus:border-[#FDBA74]" />
-            <input type="number" placeholder="Max" className="px-3 py-2 border border-[#F1DDD2] rounded-xl text-xs bg-[#FFF8F4] focus:outline-none focus:border-[#FDBA74]" />
-          </div>
-        </div>
-      </aside>
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto px-6 md:px-8 py-8">
@@ -107,7 +47,7 @@ export const DiscoveryPage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
             <h2 className="text-xl font-bold text-[#2D2A26]">Browse Candidates</h2>
-            <p className="text-sm text-[#9CA3AF] mt-0.5">Showing applicants for: <span className="font-medium text-[#6B7280]">Senior React Developer</span></p>
+            <p className="text-sm text-[#9CA3AF] mt-0.5">Showing dynamic applicants matched by AI.</p>
           </div>
           <div className="relative shrink-0">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] w-4 h-4" />
@@ -121,12 +61,34 @@ export const DiscoveryPage = () => {
           </div>
         </div>
 
+        {/* Status Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-gray-150 pb-3 overflow-x-auto">
+          {['Active', 'Applied', 'Shortlisted', 'Interviewing', 'Hired', 'Rejected'].map(status => {
+            const count = status === 'Active' 
+              ? candidates.filter(c => c.status !== 'Rejected').length
+              : candidates.filter(c => c.status === status || (status === 'Interviewing' && (c.status === 'Interview Scheduled' || c.status === 'Interviewing'))).length;
+            return (
+              <button
+                key={status}
+                onClick={() => setSelectedStatus(status)}
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all shrink-0 ${
+                  selectedStatus === status 
+                    ? 'bg-[#2D2A26] text-white shadow-sm' 
+                    : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                }`}
+              >
+                {status} ({count})
+              </button>
+            )
+          })}
+        </div>
+
         {/* Candidate Cards */}
         <div className="space-y-4 max-w-3xl">
           {filtered.length === 0 && (
             <div className="text-center py-16 text-[#9CA3AF] border border-dashed border-gray-200 rounded-2xl bg-white">
-              <p className="font-semibold text-sm text-[#6B7280] mb-1">No candidates match your filters</p>
-              <p className="text-xs">Try lowering the minimum match score.</p>
+              <p className="font-semibold text-sm text-[#6B7280] mb-1">No candidates match your search</p>
+              <p className="text-xs">Try typing a different name.</p>
             </div>
           )}
 
@@ -149,9 +111,9 @@ export const DiscoveryPage = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-[#2D2A26] text-sm leading-tight">{c.name}</p>
-                      <p className="text-xs text-[#9CA3AF] mt-0.5">{c.role}</p>
+                      <p className="text-xs text-[#9CA3AF] mt-0.5">{c.role || 'Software Engineer'}</p>
                       <p className="text-[11px] text-[#9CA3AF] flex items-center gap-1 mt-0.5">
-                        <FiMapPin className="w-3 h-3" /> {c.location}
+                        <FiMapPin className="w-3 h-3" /> {c.location || 'Remote'}
                       </p>
                     </div>
                   </div>
@@ -159,9 +121,9 @@ export const DiscoveryPage = () => {
                   {/* Score bars */}
                   <div className="flex-1 space-y-2">
                     {[
-                      { label: 'Resume',   score: c.resume,   icon: FiFileText, color: 'bg-[#F97316]' },
-                      { label: 'GitHub',   score: c.github,   icon: FiGithub,   color: 'bg-purple-500' },
-                      { label: 'LinkedIn', score: c.linkedin, icon: FiLinkedin, color: 'bg-blue-500' },
+                      { label: 'Resume',   score: c.atsScore || 85,   icon: FiFileText, color: 'bg-[#F97316]' },
+                      { label: 'GitHub',   score: c.githubScore || 80,   icon: FiGithub,   color: 'bg-purple-500' },
+                      { label: 'LinkedIn', score: c.linkedinScore || 80, icon: FiLinkedin, color: 'bg-blue-500' },
                     ].map(row => (
                       <div key={row.label} className="flex items-center gap-2">
                         <row.icon className="w-3.5 h-3.5 text-[#9CA3AF] shrink-0" />
@@ -176,11 +138,11 @@ export const DiscoveryPage = () => {
                   {/* Score + Recommendation */}
                   <div className="flex flex-col items-end gap-2 shrink-0">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-[#F97316]">{c.matchScore}%</p>
+                      <p className="text-2xl font-bold text-[#F97316]">{c.matchScore || c.overallScore || 0}%</p>
                       <p className="text-[10px] text-[#9CA3AF] font-medium">match</p>
                     </div>
-                    <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${recStyle[c.recommendation]}`}>
-                      {c.recommendation}
+                    <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${recStyle[c.recommendation || 'Consider'] || 'bg-gray-50 text-gray-700'}`}>
+                      {c.recommendation || 'Consider'}
                     </span>
                   </div>
                 </div>
@@ -195,7 +157,7 @@ export const DiscoveryPage = () => {
                     {expanded === c.id ? 'Hide summary' : 'Read summary'}
                   </button>
                   <Link
-                    to="/candidate/sarah-jenkins"
+                    to={`/candidate/${c.id}`}
                     className="flex items-center gap-1.5 px-4 py-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold rounded-lg transition-colors"
                   >
                     View Full Profile <FiArrowRight className="w-3.5 h-3.5" />
@@ -214,7 +176,7 @@ export const DiscoveryPage = () => {
                   >
                     <div className="px-5 pb-5 bg-[#FFF8F4] border-t border-[#F1DDD2]">
                       <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider pt-4 mb-2">Our take on this candidate</p>
-                      <p className="text-sm text-[#2D2A26] leading-relaxed">{c.note}</p>
+                      <p className="text-sm text-[#2D2A26] leading-relaxed">{c.executiveSummary || 'No summary generated yet.'}</p>
                     </div>
                   </motion.div>
                 )}

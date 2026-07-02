@@ -2,3 +2,8 @@ fastapi
 uvicorn[standard]
 pydantic
 python-dotenv
+requests
+apify-client
+python-multipart
+PyPDF2
+google-generativeai

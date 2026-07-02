@@ -7,7 +7,11 @@ import { Button } from '../../components/common/Button'
 import { Badge } from '../../components/common/Badge'
 import { Timeline } from '../../components/common/Timeline'
 
+import { useApp } from '../../contexts/AppContext'
+
 export const UploadResumePage = () => {
+  const { addCandidate, jobs } = useApp()
+  const [createdCandidateId, setCreatedCandidateId] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [parsingStep, setParsingStep] = useState<string>('')
@@ -18,6 +22,15 @@ export const UploadResumePage = () => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0]
       setFile(selectedFile)
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        if (reader.result) {
+          localStorage.setItem('resume_file_temp', reader.result as string)
+        }
+      }
+      reader.readAsDataURL(selectedFile)
+
       startUploadFlow()
     }
   }
@@ -56,6 +69,29 @@ export const UploadResumePage = () => {
       stepIndex++
       if (stepIndex >= steps.length) {
         clearInterval(parsingInterval)
+        
+        // Dynamic Candidate insertion on parsing success
+        const uniqueId = `cand-parsed-${Date.now()}`
+        const matchedJob = jobs[0] || { id: 'job-1', title: 'Senior React Developer' }
+        
+        const tempBase64 = localStorage.getItem('resume_file_temp')
+        if (tempBase64) {
+          localStorage.setItem(`resume_file_${uniqueId}`, tempBase64)
+          localStorage.removeItem('resume_file_temp')
+        }
+        
+        addCandidate({
+          id: uniqueId,
+          name: mockCandidate.name,
+          email: 'sarah.jenkins@example.com',
+          phone: mockCandidate.phone,
+          jobId: matchedJob.id,
+          role: matchedJob.title,
+          skills: [...mockCandidate.skills.frontend, ...mockCandidate.skills.backend],
+          resumeFileName: file?.name || 'resume.pdf'
+        })
+        
+        setCreatedCandidateId(uniqueId)
         setStatus('done')
       } else {
         setParsingStep(steps[stepIndex])
@@ -68,6 +104,7 @@ export const UploadResumePage = () => {
     setUploadProgress(0)
     setParsingStep('')
     setStatus('idle')
+    setCreatedCandidateId(null)
   }
 
   const mockCandidate = {
@@ -284,8 +321,8 @@ export const UploadResumePage = () => {
                         </div>
 
                         <div className="pt-4 border-t border-gray-100 flex justify-end">
-                          <Link to="/candidate/sarah-jenkins">
-                            <Button className="text-xs">Go to Candidate Dossier Profile</Button>
+                          <Link to={createdCandidateId ? `/candidate/${createdCandidateId}` : '#'}>
+                            <Button className="text-xs" disabled={!createdCandidateId}>Go to Candidate Dossier Profile</Button>
                           </Link>
                         </div>
                       </div>

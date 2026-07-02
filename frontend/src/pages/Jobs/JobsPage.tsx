@@ -8,12 +8,12 @@ import {
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
-import Drawer from '../../components/common/Drawer';
+import { Drawer } from '../../components/common/Drawer';
 import Input from '../../components/common/Input';
 import Textarea from '../../components/common/Textarea';
 
 const JobsPage = () => {
-  const { jobs, addJob, deleteJob, updateJob } = useApp();
+  const { jobs, addJob, deleteJob, updateJob, currentUser } = useApp();
   const navigate = useNavigate();
   
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -29,6 +29,8 @@ const JobsPage = () => {
   const [status, setStatus] = useState('Open');
   const [skillsText, setSkillsText] = useState('');
   const [description, setDescription] = useState('');
+  const [recruiterName, setRecruiterName] = useState('');
+  const [recruiterContact, setRecruiterContact] = useState('');
 
   const handleOpenCreate = () => {
     setDrawerMode('create');
@@ -39,6 +41,8 @@ const JobsPage = () => {
     setStatus('Open');
     setSkillsText('');
     setDescription('');
+    setRecruiterName(currentUser?.name || '');
+    setRecruiterContact(currentUser?.email || '');
     setIsDrawerOpen(true);
   };
 
@@ -53,6 +57,8 @@ const JobsPage = () => {
     setStatus(job.status || 'Open');
     setSkillsText(job.skills ? job.skills.join(', ') : '');
     setDescription(job.description || '');
+    setRecruiterName(job.recruiterName || '');
+    setRecruiterContact(job.recruiterContact || '');
     setIsDrawerOpen(true);
   };
 
@@ -77,7 +83,9 @@ const JobsPage = () => {
         type,
         status,
         skills: skillsArray,
-        description
+        description,
+        recruiterName,
+        recruiterContact
       });
     } else {
       const existingJob = jobs.find(j => j.id === editingJobId);
@@ -89,7 +97,9 @@ const JobsPage = () => {
         type,
         status,
         skills: skillsArray,
-        description
+        description,
+        recruiterName,
+        recruiterContact
       });
     }
 
@@ -97,6 +107,10 @@ const JobsPage = () => {
   };
 
   const filteredJobs = jobs.filter(job => {
+    // Only show jobs owned by this recruiter
+    if (job.recruiterId && currentUser && job.recruiterId !== currentUser.uid) {
+      return false;
+    }
     if (filterStatus === 'All') return true;
     return job.status === filterStatus;
   });
@@ -117,10 +131,9 @@ const JobsPage = () => {
         
         <Button 
           onClick={handleOpenCreate}
-          icon={IoAddOutline}
           className="w-full sm:w-auto"
         >
-          Create New Job
+          <IoAddOutline className="mr-1.5 w-4 h-4 inline" /> Create New Job
         </Button>
       </div>
 
@@ -171,6 +184,12 @@ const JobsPage = () => {
 
                 <h3 className="text-sm font-bold text-textPrimary dark:text-white mt-4">{job.title}</h3>
                 <p className="text-[11px] font-semibold text-primary dark:text-blue-400 mt-1">{job.department}</p>
+                
+                {(job.recruiterName || job.recruiterContact) && (
+                  <p className="text-[10px] text-textSecondary dark:text-slate-400 mt-1 font-medium">
+                    Recruiter: <span className="text-textPrimary dark:text-white font-semibold">{job.recruiterName || 'N/A'}</span> {job.recruiterContact ? `(${job.recruiterContact})` : ''}
+                  </p>
+                )}
                 
                 <div className="flex items-center gap-4 text-[10px] text-textSecondary dark:text-slate-400 mt-4 font-semibold">
                   <span className="flex items-center gap-1"><IoLocationOutline /> {job.location}</span>
@@ -259,6 +278,25 @@ const JobsPage = () => {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="e.g. Remote (US)"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              label="Recruiter Name"
+              id="recruiterName"
+              value={recruiterName}
+              onChange={(e) => setRecruiterName(e.target.value)}
+              placeholder="e.g. John Doe"
+              required
+            />
+            <Input 
+              label="Recruiter Contact Info"
+              id="recruiterContact"
+              value={recruiterContact}
+              onChange={(e) => setRecruiterContact(e.target.value)}
+              placeholder="e.g. email or phone number"
               required
             />
           </div>

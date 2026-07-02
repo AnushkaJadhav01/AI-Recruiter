@@ -19,14 +19,24 @@ import {
   FiBriefcase,
   FiLayers,
   FiList,
-  FiMessageSquare
+  FiMessageSquare,
+  FiFileText
 } from 'react-icons/fi'
 import { Card } from '../../components/common/Card'
 import { Badge } from '../../components/common/Badge'
 
+import { useParams, useNavigate } from 'react-router-dom'
+import { useApp } from '../../contexts/AppContext'
+
 export const CandidateProfilePage = () => {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { candidates, updateCandidateStatus, currentUser } = useApp()
+
   const [pipelineState, setPipelineState] = useState<number>(0)
   const [reportReady, setReportReady] = useState<boolean>(false)
+
+  const realCandidate = candidates.find(c => c.id === id)
 
   const pipelineSteps = [
     { name: 'Resume Parsing & Extraction', icon: FiTerminal },
@@ -46,43 +56,54 @@ export const CandidateProfilePage = () => {
     if (pipelineState < 10) {
       const timer = setTimeout(() => {
         setPipelineState(prev => prev + 1)
-      }, 500) // 500ms per stage for a fast, dynamic feel
+      }, 300) // 300ms per stage for a fast, dynamic feel
       return () => clearTimeout(timer)
     } else {
       setTimeout(() => setReportReady(true), 400)
     }
   }, [pipelineState])
 
-  const candidate = {
-    name: 'Sarah Jenkins',
-    role: 'Senior React Developer',
-    location: 'San Francisco, CA',
-    email: 'sarah.jenkins@stanford.edu',
-    phone: '+1 (415) 302-8843',
-    matchScore: 96,
-    confidence: 99,
-    momentum: 'High Growth',
-    riskLevel: 'Low',
-    dna: ['Next.js SSR', 'System Design', 'React Architecture', 'Performance Optimization'],
-    executiveSummary: 'Sarah is a top-decile front-end engineer. Her experience at Vercel directly translates to our requirement for deep Next.js and server-side rendering knowledge. The multi-agent evaluation confirms her ability to architect large-scale React applications with high code modularity and excellent communication skills.',
-    careerPrediction: 'Projected to reach Principal/Staff level within 24-36 months given current trajectory and open-source leadership.',
-    agents: {
-      resume: 'Extracted 12 years of total experience. Verified continuous progression from Junior to Senior roles. Identified deep expertise in React ecosystem.',
-      github: 'Analyzed 42 public repositories. Code quality score: 95/100. Exceptionally clean architecture in Next.js projects. High ratio of approved PRs.',
-      linkedin: 'Cross-referenced tenure with GitHub commits. No discrepancies found. Strong endorsements for technical leadership.',
-      projects: 'Reviewed "React Server Components Demo" repo. Demonstrated advanced understanding of caching bottlenecks and hydration strategies.'
-    },
-    riskFlags: [
-      'Flight Risk: Extremely low. Candidate shows high loyalty (average tenure 3.5 years).',
-      'Compensation Risk: High. Current market value for this skill tier is competitive.'
-    ],
-    interviewQuestions: [
-      'Walk me through the React Server Components migration you led. What caching bottlenecks did you hit?',
-      'Your GitHub shows a heavy reliance on Tailwind. How would you architect a design system if the team preferred CSS-in-JS?',
-      'Describe a time you had to push back on a product requirement because of severe frontend performance implications.'
-    ],
-    recommendation: 'STRONG HIRE. Immediately bypass technical screen and schedule a system design panel.'
+  const handleAction = (status: string, step: number) => {
+    if (realCandidate) {
+      updateCandidateStatus(realCandidate.id, status, step, currentUser?.email)
+      alert(`Candidate marked as ${status}`)
+      navigate('/discovery')
+    }
   }
+
+  if (!realCandidate && reportReady) {
+    return <div className="text-center py-20">Candidate not found</div>
+  }
+
+  const candidate = realCandidate ? {
+    name: realCandidate.name,
+    role: realCandidate.role || 'Candidate',
+    location: 'Remote', // Could be added to profile
+    email: realCandidate.email,
+    phone: realCandidate.phone || 'N/A',
+    matchScore: realCandidate.matchScore || realCandidate.overallScore || 0,
+    confidence: realCandidate.confidence || 95,
+    momentum: 'High Growth',
+    riskLevel: realCandidate.riskLevel || 'Medium',
+    dna: realCandidate.matchedSkills || ['Problem Solving', 'Adaptable'],
+    executiveSummary: realCandidate.executiveSummary || 'No summary available.',
+    careerPrediction: 'Projected to be a valuable asset to the team with steady growth potential.',
+    agents: {
+      resume: realCandidate.agents?.resume || `Resume parsed successfully. ATS Score: ${realCandidate.atsScore || 85}/100.`,
+      github: realCandidate.githubData ? 
+        `Synchronized username: @${realCandidate.githubData.username}. Quality rating: ${realCandidate.githubData.techScore}/100. Audit: ${realCandidate.githubData.qualityAudit}` :
+        `GitHub activity analyzed. Technical score: ${realCandidate.githubScore || 80}/100.`,
+      linkedin: realCandidate.linkedinData ?
+        `Synchronized profile for ${realCandidate.linkedinData.profileData?.name}. Growth rate: ${realCandidate.linkedinData.profileData?.growthRate}. Summary: ${realCandidate.linkedinData.profileData?.summary}` :
+        `LinkedIn profile verified. Network score: ${realCandidate.linkedinScore || 80}/100.`,
+      projects: realCandidate.githubData?.projects && realCandidate.githubData.projects.length > 0 ?
+        `Audited repos: ${realCandidate.githubData.projects.map((p: any) => `${p.name} (${p.stars} stars)`).join(', ')}.` :
+        'Projects reviewed.'
+    },
+    riskFlags: realCandidate.riskFlags || [],
+    interviewQuestions: realCandidate.interviewQuestions || [],
+    recommendation: realCandidate.recommendation || 'Consider'
+  } : {} as any
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
@@ -196,6 +217,71 @@ export const CandidateProfilePage = () => {
                     <div className="w-6 h-6 rounded bg-gray-50 flex items-center justify-center"><FiPhone className="text-gray-400 w-3.5 h-3.5" /></div>
                     <span>{candidate.phone}</span>
                   </div>
+
+                  {realCandidate && (realCandidate.githubUsername || realCandidate.githubData?.username) && (
+                    <div className="flex items-center gap-3 border-t border-gray-50 pt-3">
+                      <div className="w-6 h-6 rounded bg-slate-50 flex items-center justify-center text-gray-800"><FiGitCommit className="w-3.5 h-3.5" /></div>
+                      <a 
+                        href={`https://github.com/${realCandidate.githubUsername || realCandidate.githubData?.username}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-blue-600 hover:underline font-bold truncate"
+                      >
+                        github.com/{realCandidate.githubUsername || realCandidate.githubData?.username}
+                      </a>
+                    </div>
+                  )}
+
+                  {realCandidate && (realCandidate.linkedinUrl || realCandidate.linkedinData?.profileUrl) && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded bg-blue-50 flex items-center justify-center text-blue-600"><FiLinkedin className="w-3.5 h-3.5" /></div>
+                      <a 
+                        href={realCandidate.linkedinUrl || realCandidate.linkedinData?.profileUrl} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-blue-600 hover:underline font-bold truncate"
+                      >
+                        LinkedIn Profile Link
+                      </a>
+                    </div>
+                  )}
+
+                  {realCandidate && (realCandidate.resumeFileName || realCandidate.resumeAnalysis?.fileName) && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded bg-red-50 flex items-center justify-center text-red-500"><FiFileText className="w-3.5 h-3.5" /></div>
+                      <a 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const base64 = localStorage.getItem(`resume_file_${realCandidate.id}`) || 
+                                         localStorage.getItem(`resume_file_${realCandidate.email}`)
+                          if (base64) {
+                            try {
+                              const base64Parts = base64.split(',');
+                              const mime = base64Parts[0].match(/:(.*?);/)?.[1] || 'application/pdf';
+                              const byteCharacters = atob(base64Parts[1]);
+                              const byteNumbers = new Array(byteCharacters.length);
+                              for (let i = 0; i < byteCharacters.length; i++) {
+                                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                              }
+                              const byteArray = new Uint8Array(byteNumbers);
+                              const blob = new Blob([byteArray], { type: mime });
+                              const fileURL = URL.createObjectURL(blob);
+                              window.open(fileURL, '_blank');
+                            } catch (err) {
+                              console.error("Failed to parse base64 PDF string", err);
+                              alert("Could not render uploaded PDF binary. It may be corrupt.");
+                            }
+                          } else {
+                            alert("No uploaded resume PDF found in this browser's local store. Please make sure you upload a resume first!");
+                          }
+                        }} 
+                        className="text-blue-600 hover:underline font-bold truncate"
+                      >
+                        {realCandidate.resumeFileName || realCandidate.resumeAnalysis?.fileName}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </Card>
 
@@ -249,11 +335,27 @@ export const CandidateProfilePage = () => {
                 <p className="text-sm text-gray-700 leading-relaxed font-medium mb-6">
                   {candidate.executiveSummary}
                 </p>
-                <div className="p-4 bg-white border border-blue-100 rounded-xl text-xs font-extrabold text-blue-900 flex items-center gap-3 shadow-sm">
+                <div className="p-4 bg-white border border-blue-100 rounded-xl text-xs font-extrabold text-blue-900 flex items-center gap-3 shadow-sm mb-6">
                   <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                     <FiCheckCircle className="w-4 h-4" />
                   </div>
                   <span className="uppercase tracking-wider">{candidate.recommendation}</span>
+                </div>
+                
+                {/* Recruiter Actions */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <button onClick={() => handleAction('Shortlisted', 3)} className="px-4 py-2.5 bg-green-100 text-green-700 font-bold rounded-xl text-xs hover:bg-green-200 transition-colors">
+                    Shortlist
+                  </button>
+                  <button onClick={() => handleAction('Interviewing', 4)} className="px-4 py-2.5 bg-purple-100 text-purple-700 font-bold rounded-xl text-xs hover:bg-purple-200 transition-colors">
+                    Schedule Interview
+                  </button>
+                  <button onClick={() => handleAction('Hired', 5)} className="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition-colors">
+                    Hire
+                  </button>
+                  <button onClick={() => handleAction('Rejected', 5)} className="px-4 py-2.5 bg-red-100 text-red-700 font-bold rounded-xl text-xs hover:bg-red-200 transition-colors">
+                    Reject
+                  </button>
                 </div>
               </Card>
 

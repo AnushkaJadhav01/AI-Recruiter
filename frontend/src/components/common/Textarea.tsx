@@ -1,5 +1,17 @@
 import React from 'react';
 
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  id: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  error?: string;
+  rows?: number;
+  required?: boolean;
+  className?: string;
+}
+
 const Textarea = ({
   label,
   id,
@@ -11,7 +23,7 @@ const Textarea = ({
   required = false,
   className = '',
   ...props
-}) => {
+}: TextareaProps) => {
   return (
     <div className={`w-full ${className}`}>
       {label && (

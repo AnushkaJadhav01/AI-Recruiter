@@ -1,5 +1,18 @@
 import React from 'react';
 
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  id: string;
+  type?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  error?: string;
+  required?: boolean;
+  className?: string;
+  icon?: React.ComponentType<any>;
+}
+
 const Input = ({
   label,
   id,
@@ -12,7 +25,7 @@ const Input = ({
   className = '',
   icon: Icon,
   ...props
-}) => {
+}: InputProps) => {
   return (
     <div className={`w-full ${className}`}>
       {label && (

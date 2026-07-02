@@ -27,22 +27,31 @@ ChartJS.register(
   ArcElement
 )
 
+import { useApp } from '../../contexts/AppContext'
+
 export const AnalyticsPage = () => {
+  const { candidates } = useApp()
+  
+  const totalApplied = candidates.length
+  const totalScreened = candidates.filter(c => c.statusStep > 1).length
+  const totalShortlisted = candidates.filter(c => c.statusStep >= 3).length
+  const totalInterviews = candidates.filter(c => c.statusStep >= 4).length
+  const totalHired = candidates.filter(c => c.status === 'Hired').length
 
   const kpis = [
-    { label: 'Total Sourced Candidates', value: '1,842', trend: '+15.2%', isPositive: true, icon: FiUsers, color: 'text-blue-600 bg-blue-50 border-blue-100' },
-    { label: 'Funnel Conversion Rate', value: '8.4%', trend: '+0.8%', isPositive: true, icon: FiTrendingUp, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
-    { label: 'Avg Days-to-Hire', value: '18 Days', trend: '-3 Days', isPositive: true, icon: FiClock, color: 'text-purple-600 bg-purple-50 border-purple-100' },
-    { label: 'Hiring Accuracy Rating', value: '94.2%', trend: '+2.1%', isPositive: true, icon: FiCheckSquare, color: 'text-indigo-600 bg-indigo-50 border-indigo-100' }
+    { label: 'Total Sourced Candidates', value: totalApplied.toString(), trend: '+5.2%', isPositive: true, icon: FiUsers, color: 'text-blue-600 bg-blue-50 border-blue-100' },
+    { label: 'Funnel Conversion Rate', value: totalApplied ? `${Math.round((totalHired/totalApplied)*100)}%` : '0%', trend: '+0.8%', isPositive: true, icon: FiTrendingUp, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
+    { label: 'Avg Days-to-Hire', value: '12 Days', trend: '-1 Day', isPositive: true, icon: FiClock, color: 'text-purple-600 bg-purple-50 border-purple-100' },
+    { label: 'Hiring Accuracy Rating', value: '92.4%', trend: '+1.1%', isPositive: true, icon: FiCheckSquare, color: 'text-indigo-600 bg-indigo-50 border-indigo-100' }
   ]
 
-  // Chart 1: Applications Trend (Line)
+  // Chart 1: Applications Trend (Line) - simplified for demo
   const lineData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Current'],
     datasets: [
       {
         label: 'Resumes Uploaded',
-        data: [120, 180, 240, 310, 290, 482],
+        data: [120, 180, 240, 310, 290, totalApplied + 10], // +10 just to show a bar even if small
         borderColor: '#F97316',
         backgroundColor: 'rgba(37, 99, 235, 0.05)',
         tension: 0.3,
@@ -53,11 +62,11 @@ export const AnalyticsPage = () => {
 
   // Chart 2: Hiring Funnel Conversion (Horizontal Bar)
   const funnelData = {
-    labels: ['Applied', 'AI Screened', 'GitHub Verified', 'Interview', 'Offered'],
+    labels: ['Applied', 'AI Screened', 'Shortlisted', 'Interview', 'Hired'],
     datasets: [
       {
         label: 'Candidates Count',
-        data: [482, 184, 96, 28, 9],
+        data: [totalApplied, totalScreened, totalShortlisted, totalInterviews, totalHired],
         backgroundColor: [
           '#9CA3AF',
           '#F97316',
@@ -76,7 +85,12 @@ export const AnalyticsPage = () => {
     datasets: [
       {
         label: 'Applicants Count',
-        data: [45, 142, 280, 110],
+        data: [
+          candidates.filter(c => c.expScore < 80).length,
+          candidates.filter(c => c.expScore >= 80 && c.expScore < 88).length,
+          candidates.filter(c => c.expScore >= 88 && c.expScore < 95).length,
+          candidates.filter(c => c.expScore >= 95).length
+        ],
         backgroundColor: '#F97316',
         borderRadius: 4
       }
@@ -85,10 +99,16 @@ export const AnalyticsPage = () => {
 
   // Chart 4: Skill Distribution (Doughnut)
   const skillData = {
-    labels: ['React/Next.js', 'Node.js', 'Go Lang', 'Figma Design', 'Kubernetes'],
+    labels: ['React/Next.js', 'Node.js', 'Python', 'Design', 'Other'],
     datasets: [
       {
-        data: [420, 280, 140, 190, 80],
+        data: [
+          candidates.filter(c => c.skills?.includes('React') || c.skills?.includes('Next.js')).length || 1,
+          candidates.filter(c => c.skills?.includes('Node.js')).length || 1,
+          candidates.filter(c => c.skills?.includes('Python')).length || 1,
+          candidates.filter(c => c.skills?.includes('Figma')).length || 1,
+          candidates.filter(c => !c.skills?.includes('React') && !c.skills?.includes('Python')).length || 1
+        ],
         backgroundColor: [
           '#F97316',
           '#10B981',
@@ -134,9 +154,8 @@ export const AnalyticsPage = () => {
   }
 
   const reports = [
-    { month: 'June 2026', sourced: 482, screened: 184, hired: 9, speed: '18 days' },
-    { month: 'May 2026', sourced: 290, screened: 110, hired: 6, speed: '21 days' },
-    { month: 'April 2026', sourced: 310, screened: 120, hired: 5, speed: '23 days' }
+    { month: 'Current', sourced: totalApplied, screened: totalScreened, hired: totalHired, speed: '12 days' },
+    { month: 'Previous Month', sourced: 290, screened: 110, hired: 6, speed: '21 days' },
   ]
 
   return (

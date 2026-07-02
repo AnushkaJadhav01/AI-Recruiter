@@ -7,38 +7,32 @@ import {
 } from 'react-icons/fi'
 import { useApp } from '../../contexts/AppContext'
 
-type JobStatus = 'Active' | 'Reviewing' | 'Draft'
+type JobStatus = 'Open' | 'Closed' | 'Draft'
 
-const statusStyles: Record<JobStatus, string> = {
-  Active:    'bg-emerald-50 text-emerald-700 border-emerald-200',
-  Reviewing: 'bg-amber-50  text-amber-700  border-amber-200',
-  Draft:     'bg-gray-100  text-gray-500   border-gray-200',
+const statusStyles: Record<string, string> = {
+  Open:      'bg-emerald-50 text-emerald-700 border-emerald-200',
+  Closed:    'bg-gray-100  text-gray-500   border-gray-200',
+  Draft:     'bg-amber-50  text-amber-700  border-amber-200',
 }
-
-const jobs: {
-  id: number; title: string; department: string; location: string;
-  status: JobStatus; total: number; shortlisted: number; interviews: number; updated: string
-}[] = [
-  { id: 1, title: 'ML Engineer',          department: 'AI Research',     location: 'San Francisco, CA', status: 'Active',    total: 142, shortlisted: 5,  interviews: 2, updated: '10 min ago' },
-  { id: 2, title: 'Backend Engineer',     department: 'Infrastructure',  location: 'Remote',            status: 'Reviewing', total: 412, shortlisted: 18, interviews: 4, updated: '1 hour ago'  },
-  { id: 3, title: 'AI Research Intern',   department: 'Research',        location: 'Austin, TX',        status: 'Active',    total: 86,  shortlisted: 3,  interviews: 1, updated: '2 days ago'  },
-  { id: 4, title: 'Frontend Developer',   department: 'Product',         location: 'Remote',            status: 'Draft',     total: 0,   shortlisted: 0,  interviews: 0, updated: '3 days ago'  },
-]
-
-const recentActivity = [
-  { id: 1, name: 'Sarah Jenkins',  action: 'was shortlisted',           role: 'ML Engineer',       time: '10 min ago', color: 'bg-green-100 text-green-700' },
-  { id: 2, name: 'Alex Mercer',    action: 'profile reviewed',          role: 'Backend Engineer',  time: '1 hour ago', color: 'bg-blue-100 text-blue-700' },
-  { id: 3, name: 'Jordan Kim',     action: 'interview scheduled',       role: 'AI Research Intern',time: '5 hours ago', color: 'bg-purple-100 text-purple-700' },
-]
 
 export const RecruiterDashboard = () => {
   const navigate = useNavigate()
-  const { currentUser } = useApp()
+  const { jobs, candidates, activities: globalActivities, currentUser, deleteJob } = useApp()
   const firstName = (currentUser?.name || 'there').split(' ')[0]
 
-  const totalApplicants = jobs.reduce((s, j) => s + j.total, 0)
-  const totalShortlisted = jobs.reduce((s, j) => s + j.shortlisted, 0)
-  const totalInterviews  = jobs.reduce((s, j) => s + j.interviews, 0)
+  const myJobs = jobs.filter(job => !job.recruiterId || (currentUser && job.recruiterId === currentUser.uid))
+  
+  // Filter activities to show only those relevant to this recruiter's jobs or created by this recruiter
+  const recentActivity = globalActivities
+    .filter(a => a.recruiterId === currentUser?.uid || myJobs.some(j => j.title === a.target))
+    .slice(0, 5)
+
+  const myJobIds = myJobs.map(j => j.id)
+  const myCandidates = candidates.filter(c => myJobIds.includes(c.jobId))
+
+  const totalApplicants = myCandidates.length
+  const totalShortlisted = myCandidates.filter(c => c.status === 'Shortlisted').length
+  const totalInterviews  = myCandidates.filter(c => c.status === 'Interviewing' || c.status === 'Interview Scheduled' || c.status === 'Interview').length
 
   return (
     <div className="space-y-8 max-w-6xl">
@@ -97,72 +91,88 @@ export const RecruiterDashboard = () => {
             </Link>
           </div>
 
-          {jobs.map((job, idx) => (
-            <motion.div
-              key={job.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 + idx * 0.06 }}
-              className="bg-white border border-[#F1DDD2] rounded-2xl p-5 hover:border-[#FDBA74] hover:shadow-sm transition-all group"
-            >
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FFF2EA] text-[#F97316] font-bold text-base flex items-center justify-center shrink-0">
-                    {job.title.charAt(0)}
+          {myJobs.length === 0 ? (
+            <div className="col-span-full py-12 text-center bg-[#F8FAFC] rounded-2xl border border-[#E5E7EB] border-dashed">
+              <p className="text-[#6B7280] text-sm font-medium">No open positions right now.</p>
+            </div>
+          ) : (
+            myJobs.map((job, idx) => (
+              <motion.div
+                key={job.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + idx * 0.05 }}
+                className="bg-white border border-[#F1DDD2] rounded-2xl p-5 shadow-[0_2px_10px_rgba(45,42,38,0.02)] hover:shadow-[0_8px_24px_rgba(45,42,38,0.06)] hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#FFF2EA] text-[#F97316] font-bold text-base flex items-center justify-center shrink-0">
+                      {job.title.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#2D2A26] text-sm">{job.title}</p>
+                      <p className="text-xs text-[#9CA3AF] flex items-center gap-1 mt-0.5">
+                        {job.department} · <FiMapPin className="w-3 h-3" /> {job.location}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-[#2D2A26] text-sm">{job.title}</p>
-                    <p className="text-xs text-[#9CA3AF] flex items-center gap-1 mt-0.5">
-                      {job.department} · <FiMapPin className="w-3 h-3" /> {job.location}
-                    </p>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusStyles[job.status]}`}>
+                      {job.status}
+                    </span>
+                    <button className="p-1.5 rounded-lg hover:bg-gray-50 text-[#9CA3AF] transition-colors">
+                      <FiMoreHorizontal className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusStyles[job.status]}`}>
-                    {job.status}
+
+                 {/* Metrics */}
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  {[
+                    { label: 'Applicants',  value: candidates.filter(c => c.jobId === job.id).length, color: 'text-[#2D2A26]' },
+                    { label: 'Shortlisted', value: candidates.filter(c => c.jobId === job.id && c.status === 'Shortlisted').length,     color: 'text-emerald-600' },
+                    { label: 'Interviews',  value: candidates.filter(c => c.jobId === job.id && (c.status === 'Interviewing' || c.status === 'Interview Scheduled' || c.status === 'Interview')).length,      color: 'text-purple-600' },
+                  ].map(m => (
+                    <div key={m.label} className="bg-[#F8FAFC] rounded-xl py-3 text-center">
+                      <p className={`text-xl font-bold ${m.color}`}>{m.value}</p>
+                      <p className="text-[10px] text-[#9CA3AF] font-medium mt-0.5">{m.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Actions + timestamp */}
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-[11px] text-[#9CA3AF] flex items-center gap-1">
+                    <FiClock className="w-3 h-3" /> Updated {job.postedDate || job.updated || 'Today'}
                   </span>
-                  <button className="p-1.5 rounded-lg hover:bg-gray-50 text-[#9CA3AF] transition-colors">
-                    <FiMoreHorizontal className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Metrics */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                {[
-                  { label: 'Applicants',  value: job.total,        color: 'text-[#2D2A26]' },
-                  { label: 'Shortlisted', value: job.shortlisted,  color: 'text-emerald-600' },
-                  { label: 'Interviews',  value: job.interviews,   color: 'text-purple-600' },
-                ].map(m => (
-                  <div key={m.label} className="bg-[#F8FAFC] rounded-xl py-3 text-center">
-                    <p className={`text-xl font-bold ${m.color}`}>{m.value}</p>
-                    <p className="text-[10px] text-[#9CA3AF] font-medium mt-0.5">{m.label}</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        if (confirm('Are you sure you want to delete this job role?')) {
+                          deleteJob(job.id)
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg transition-colors border border-red-100"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => navigate('/upload-resume')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-[#2D2A26] text-xs font-semibold rounded-lg transition-colors"
+                    >
+                      <FiUpload className="w-3 h-3" /> Upload CVs
+                    </button>
+                    <button
+                      onClick={() => navigate('/discovery')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold rounded-lg transition-colors"
+                    >
+                      View Candidates <FiArrowRight className="w-3 h-3" />
+                    </button>
                   </div>
-                ))}
-              </div>
-
-              {/* Actions + timestamp */}
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <span className="text-[11px] text-[#9CA3AF] flex items-center gap-1">
-                  <FiClock className="w-3 h-3" /> Updated {job.updated}
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => navigate('/upload-resume')}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-[#2D2A26] text-xs font-semibold rounded-lg transition-colors"
-                  >
-                    <FiUpload className="w-3 h-3" /> Upload CVs
-                  </button>
-                  <button
-                    onClick={() => navigate('/discovery')}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold rounded-lg transition-colors"
-                  >
-                    View Candidates <FiArrowRight className="w-3 h-3" />
-                  </button>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))
+          )}
         </div>
 
         {/* Sidebar */}
@@ -174,14 +184,14 @@ export const RecruiterDashboard = () => {
             <div className="space-y-4">
               {recentActivity.map(item => (
                 <div key={item.id} className="flex items-start gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${item.color}`}>
-                    {item.name.charAt(0)}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${item.color || 'bg-gray-100 text-gray-700'}`}>
+                    {(item.name || 'U').charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-[#2D2A26] font-medium leading-relaxed">
-                      <span className="font-semibold">{item.name}</span> {item.action}
+                      <span className="font-semibold">{item.name || 'User'}</span> {item.action}
                     </p>
-                    <p className="text-[11px] text-[#9CA3AF] mt-0.5">{item.role} · {item.time}</p>
+                    <p className="text-[11px] text-[#9CA3AF] mt-0.5">{item.target || item.role} · {new Date(item.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                   </div>
                 </div>
               ))}

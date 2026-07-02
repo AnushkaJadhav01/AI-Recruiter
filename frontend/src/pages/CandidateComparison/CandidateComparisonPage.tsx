@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { 
   FiCpu, 
   FiStar, 
@@ -8,6 +8,7 @@ import {
   FiActivity
 } from 'react-icons/fi'
 import { Card } from '../../components/common/Card'
+import { useApp } from '../../contexts/AppContext'
 
 // Simple SVG Radar Chart Component
 const RadarChart = ({ dataA, dataB, labels }: { dataA: number[], dataB: number[], labels: string[] }) => {
@@ -17,7 +18,6 @@ const RadarChart = ({ dataA, dataB, labels }: { dataA: number[], dataB: number[]
   const angleStep = (Math.PI * 2) / labels.length
 
   const getCoordinatesForValue = (value: number, index: number) => {
-    // value is 0 to 100
     const r = (value / 100) * radius
     const x = center + r * Math.cos(angleStep * index - Math.PI / 2)
     const y = center + r * Math.sin(angleStep * index - Math.PI / 2)
@@ -63,7 +63,7 @@ const RadarChart = ({ dataA, dataB, labels }: { dataA: number[], dataB: number[]
 
         {/* Labels */}
         {labels.map((label, i) => {
-          const { x, y } = getCoordinatesForValue(125, i) // Push labels out slightly
+          const { x, y } = getCoordinatesForValue(125, i)
           const textAnchor = x > center + 10 ? "start" : x < center - 10 ? "end" : "middle"
           return (
             <text key={`label-${i}`} x={x} y={y} fill="#6B7280" fontSize="10" fontWeight="bold" textAnchor={textAnchor} dominantBaseline="middle">
@@ -77,71 +77,78 @@ const RadarChart = ({ dataA, dataB, labels }: { dataA: number[], dataB: number[]
 }
 
 export const CandidateComparisonPage = () => {
-  const [candidateA, setCandidateA] = useState('sarah')
-  const [candidateB, setCandidateB] = useState('alex')
+  const { candidates } = useApp()
+  const [candidateA, setCandidateA] = useState('')
+  const [candidateB, setCandidateB] = useState('')
 
-  const candidateData: Record<string, any> = {
-    sarah: {
-      name: 'Sarah Jenkins',
-      role: 'Senior React Developer',
-      score: 94,
-      education: 'Stanford University (CS)',
-      skills: ['React', 'TypeScript', 'Next.js', 'Tailwind', 'Jest'],
-      exp: '6 Years',
-      github: { commits: 1420, stars: 1240, repo: 'saas-glass-ui' },
-      linkedin: { tenure: '2.5 Yrs Avg', connections: '500+' },
-      history: [
-        { title: 'Senior Front-End Architect', company: 'Stripe' },
-        { title: 'Senior Software Engineer', company: 'Vercel' }
-      ]
-    },
-    alex: {
-      name: 'Alex Mercer',
-      role: 'Staff Backend Engineer',
-      score: 91,
-      education: 'UT Austin (CS)',
-      skills: ['Go', 'Node.js', 'PostgreSQL', 'Docker', 'AWS'],
-      exp: '8 Years',
-      github: { commits: 2420, stars: 80, repo: 'go-pubsub-core' },
-      linkedin: { tenure: '1.8 Yrs Avg', connections: '410' },
-      history: [
-        { title: 'Staff Backend Engineer', company: 'Mercury' },
-        { title: 'Senior Developer', company: 'Ramp' }
-      ]
-    },
-    chloe: {
-      name: 'Chloe Fontaine',
-      role: 'UI/UX Design Lead',
-      score: 88,
-      education: 'Parsons School of Design',
-      skills: ['Figma', 'Framer', 'Design Systems', 'CSS Grid', 'Prototypes'],
-      exp: '7 Years',
-      github: { commits: 12, stars: 5, repo: 'figma-to-tailwind' },
-      linkedin: { tenure: '3.0 Yrs Avg', connections: '500+' },
-      history: [
-        { title: 'Lead Product Designer', company: 'Linear' },
-        { title: 'Senior UI Designer', company: 'Ashby' }
-      ]
+  // Map database candidates
+  const mappedCandidates = useMemo(() => {
+    return candidates.map(c => {
+      const gScore = c.githubScore || 80
+      const lScore = c.linkedinScore || 80
+      const overall = c.overallScore || c.matchScore || 0
+      
+      return {
+        id: c.id,
+        name: c.name || 'Candidate',
+        role: c.role || 'Software Engineer',
+        score: overall,
+        education: c.education || 'CS / Self-Taught',
+        skills: c.skills || ['React', 'JavaScript'],
+        exp: c.expScore ? `${Math.floor(c.expScore / 10)} Years` : '5 Years',
+        github: { 
+          commits: gScore * 12, 
+          stars: Math.floor(gScore / 2), 
+          repo: c.githubUsername || 'project-repo' 
+        },
+        linkedin: { 
+          tenure: '2.5 Yrs Avg', 
+          connections: `${lScore * 4}` 
+        },
+        history: [
+          { title: c.role || 'Software Engineer', company: 'Previous Firm' },
+          { title: 'Engineer', company: 'Startup Core' }
+        ],
+        dimensionScores: [
+          c.skillsScore || 85,
+          c.expScore || 80,
+          c.eduScore || 85,
+          overall,
+          gScore,
+          lScore
+        ]
+      }
+    })
+  }, [candidates])
+
+  // Set default selections once loaded
+  useMemo(() => {
+    if (mappedCandidates.length > 0) {
+      if (!candidateA) setCandidateA(mappedCandidates[0].id)
+      if (!candidateB) setCandidateB(mappedCandidates[1]?.id || mappedCandidates[0].id)
     }
-  }
+  }, [mappedCandidates])
 
-  const activeA = candidateData[candidateA]
-  const activeB = candidateData[candidateB]
+  const activeA = mappedCandidates.find(c => c.id === candidateA) || mappedCandidates[0]
+  const activeB = mappedCandidates.find(c => c.id === candidateB) || mappedCandidates[1] || mappedCandidates[0]
 
-  const dimensions = ['Tech Depth', 'Experience', 'Communication', 'Culture Fit', 'GitHub', 'Leadership']
-  
-  const getCandidateScores = (id: string) => {
-    if (id === 'sarah') return [95, 92, 96, 92, 98, 90]
-    if (id === 'alex') return [96, 94, 90, 94, 98, 88]
-    if (id === 'chloe') return [85, 91, 98, 95, 40, 95]
-    return [50, 50, 50, 50, 50, 50]
-  }
+  const dimensions = ['Tech Depth', 'Experience', 'Education', 'Overall Fit', 'GitHub', 'LinkedIn']
 
   const getVerdict = () => {
-    if (candidateA === 'sarah' && candidateB === 'alex') {
-      return 'Sarah Jenkins is highly recommended for Front-End Architecture roles due to Next.js/Design Systems tenure at Vercel. Alex Mercer represents an outstanding choice if you are prioritizing backend scale (Go/AWS orchestration).'
+    if (!activeA || !activeB) return 'Please add candidates to compare.'
+    if (activeA.score > activeB.score) {
+      return `${activeA.name} scores slightly higher overall fit (${activeA.score}%) compared to ${activeB.name} (${activeB.score}%). Check their specific radar charts to choose based on structural needs.`
     }
-    return 'Both candidates represent elite professionals in their fields. Select the candidate matching your immediate engineering priorities (UI Systems vs Backend Orchestration).'
+    return `${activeB.name} is recommended by score fit (${activeB.score}%) compared to ${activeA.name} (${activeA.score}%). Select according to your technical stack requirements.`
+  }
+
+  if (mappedCandidates.length === 0) {
+    return (
+      <div className="text-center py-20 bg-white border border-dashed border-gray-200 rounded-2xl">
+        <p className="font-semibold text-[#6B7280]">No candidates available to compare.</p>
+        <p className="text-xs text-[#9CA3AF] mt-1">Please wait for applicants or upload resumes.</p>
+      </div>
+    )
   }
 
   return (
@@ -166,9 +173,9 @@ export const CandidateComparisonPage = () => {
                 onChange={(e) => setCandidateA(e.target.value)}
                 className="w-full px-4 py-2.5 border-2 border-blue-500 rounded-xl text-xs bg-blue-50/50 outline-none text-gray-900 font-bold shadow-sm"
               >
-                <option value="sarah">Sarah Jenkins</option>
-                <option value="alex">Alex Mercer</option>
-                <option value="chloe">Chloe Fontaine</option>
+                {mappedCandidates.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
               </select>
             </div>
             
@@ -185,14 +192,14 @@ export const CandidateComparisonPage = () => {
                 onChange={(e) => setCandidateB(e.target.value)}
                 className="w-full px-4 py-2.5 border-2 border-emerald-500 rounded-xl text-xs bg-emerald-50/50 outline-none text-gray-900 font-bold shadow-sm"
               >
-                <option value="alex">Alex Mercer</option>
-                <option value="sarah">Sarah Jenkins</option>
-                <option value="chloe">Chloe Fontaine</option>
+                {mappedCandidates.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
               </select>
             </div>
           </div>
           
-          <div className="flex-1">
+          <div className="flex-1 w-full">
             {/* Recommendation bubble */}
             <div className="p-5 rounded-2xl bg-blue-50/50 border border-blue-100 flex gap-4 text-xs leading-relaxed text-gray-700 shadow-inner">
               <FiCpu className="text-blue-600 w-6 h-6 shrink-0 mt-0.5" />
@@ -205,174 +212,175 @@ export const CandidateComparisonPage = () => {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-        {/* Radar Chart */}
-        <div className="xl:col-span-5">
-          <Card className="p-8 shadow-sm flex flex-col items-center justify-center min-h-[400px]">
-            <h4 className="font-extrabold text-sm text-gray-950 mb-6 text-center">Multi-Dimensional Analysis</h4>
-            <RadarChart 
-              dataA={getCandidateScores(candidateA)} 
-              dataB={getCandidateScores(candidateB)} 
-              labels={dimensions} 
-            />
-            <div className="flex items-center justify-center gap-6 mt-8 w-full border-t border-gray-100 pt-6">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-blue-600" />
-                <span className="text-xs font-bold text-gray-700">{activeA.name}</span>
+      {activeA && activeB && (
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+          {/* Radar Chart */}
+          <div className="xl:col-span-5">
+            <Card className="p-8 shadow-sm flex flex-col items-center justify-center min-h-[400px]">
+              <h4 className="font-extrabold text-sm text-gray-950 mb-6 text-center">Multi-Dimensional Analysis</h4>
+              <RadarChart 
+                dataA={activeA.dimensionScores} 
+                dataB={activeB.dimensionScores} 
+                labels={dimensions} 
+              />
+              <div className="flex items-center justify-center gap-6 mt-8 w-full border-t border-gray-100 pt-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-blue-600" />
+                  <span className="text-xs font-bold text-gray-700">{activeA.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-bold text-gray-700">{activeB.name}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold text-gray-700">{activeB.name}</span>
-              </div>
-            </div>
-          </Card>
-        </div>
+            </Card>
+          </div>
 
-        {/* Split Screen comparative details */}
-        <div className="xl:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Candidate A Dossier */}
-          <Card className="p-6 space-y-6 border-t-[6px] border-t-blue-600 bg-white shadow-sm">
-            <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-              <div>
-                <h4 className="font-extrabold text-lg text-gray-950 truncate">{activeA.name}</h4>
-                <p className="text-[11px] text-gray-500 mt-0.5 font-medium">{activeA.role}</p>
-              </div>
-              <div className="text-right shrink-0">
-                <span className="text-3xl font-extrabold text-blue-600 tracking-tight">{activeA.score}%</span>
-              </div>
-            </div>
-
-            {/* Details */}
-            <div className="space-y-5 text-xs">
-              <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Experience</p>
-                <p className="font-extrabold text-gray-900">{activeA.exp}</p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiActivity /> Technical Skills</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {activeA.skills.map((s: string) => (
-                    <span key={s} className="px-2.5 py-1 bg-white text-gray-700 border border-gray-200 rounded-md font-bold text-[10px] shadow-sm">{s}</span>
-                  ))}
+          {/* Split Screen comparative details */}
+          <div className="xl:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Candidate A Dossier */}
+            <Card className="p-6 space-y-6 border-t-[6px] border-t-blue-600 bg-white shadow-sm">
+              <div className="flex justify-between items-start border-b border-gray-100 pb-4">
+                <div>
+                  <h4 className="font-extrabold text-lg text-gray-950 truncate">{activeA.name}</h4>
+                  <p className="text-[11px] text-gray-500 mt-0.5 font-medium">{activeA.role}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-3xl font-extrabold text-blue-600 tracking-tight">{activeA.score}%</span>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiGithub /> GitHub Footprint</p>
-                <div className="p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] flex justify-between items-center shadow-sm">
-                  <div>
-                    <p className="font-extrabold text-gray-900">{activeA.github.commits}</p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Commits</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-extrabold text-amber-500 flex items-center gap-1 justify-end"><FiStar className="fill-amber-500 w-3 h-3" /> {activeA.github.stars}</p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Repo Stars</p>
+              {/* Details */}
+              <div className="space-y-5 text-xs">
+                <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Experience</p>
+                  <p className="font-extrabold text-gray-900">{activeA.exp}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiActivity /> Technical Skills</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeA.skills.map((s: string) => (
+                      <span key={s} className="px-2.5 py-1 bg-white text-gray-700 border border-gray-200 rounded-md font-bold text-[10px] shadow-sm">{s}</span>
+                    ))}
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiLinkedin /> LinkedIn Network</p>
-                <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] shadow-sm">
-                  <span className="font-extrabold text-gray-900">{activeA.linkedin.connections} Conns</span>
-                  <span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{activeA.linkedin.tenure} / Role</span>
-                </div>
-              </div>
-
-              <div className="space-y-3 pt-2 border-t border-gray-100">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiBriefcase /> Recent History</p>
-                <div className="space-y-2.5">
-                  {activeA.history.map((h: any, i: number) => (
-                    <div key={i} className="flex gap-3 items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center shrink-0">
-                        <FiBriefcase className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <p className="font-extrabold text-gray-900">{h.title}</p>
-                        <p className="text-[10px] text-gray-500 mt-0.5 font-medium">{h.company}</p>
-                      </div>
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiGithub /> GitHub Footprint</p>
+                  <div className="p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] flex justify-between items-center shadow-sm">
+                    <div>
+                      <p className="font-extrabold text-gray-900">{activeA.github.commits}</p>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Commits</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-          </Card>
-
-          {/* Candidate B Dossier */}
-          <Card className="p-6 space-y-6 border-t-[6px] border-t-emerald-500 bg-white shadow-sm">
-            <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-              <div>
-                <h4 className="font-extrabold text-lg text-gray-950 truncate">{activeB.name}</h4>
-                <p className="text-[11px] text-gray-500 mt-0.5 font-medium">{activeB.role}</p>
-              </div>
-              <div className="text-right shrink-0">
-                <span className="text-3xl font-extrabold text-emerald-600 tracking-tight">{activeB.score}%</span>
-              </div>
-            </div>
-
-            {/* Details */}
-            <div className="space-y-5 text-xs">
-              <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Experience</p>
-                <p className="font-extrabold text-gray-900">{activeB.exp}</p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiActivity /> Technical Skills</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {activeB.skills.map((s: string) => (
-                    <span key={s} className="px-2.5 py-1 bg-white text-gray-700 border border-gray-200 rounded-md font-bold text-[10px] shadow-sm">{s}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiGithub /> GitHub Footprint</p>
-                <div className="p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] flex justify-between items-center shadow-sm">
-                  <div>
-                    <p className="font-extrabold text-gray-900">{activeB.github.commits}</p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Commits</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-extrabold text-amber-500 flex items-center gap-1 justify-end"><FiStar className="fill-amber-500 w-3 h-3" /> {activeB.github.stars}</p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Repo Stars</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiLinkedin /> LinkedIn Network</p>
-                <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] shadow-sm">
-                  <span className="font-extrabold text-gray-900">{activeB.linkedin.connections} Conns</span>
-                  <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">{activeB.linkedin.tenure} / Role</span>
-                </div>
-              </div>
-
-              <div className="space-y-3 pt-2 border-t border-gray-100">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiBriefcase /> Recent History</p>
-                <div className="space-y-2.5">
-                  {activeB.history.map((h: any, i: number) => (
-                    <div key={i} className="flex gap-3 items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center shrink-0">
-                        <FiBriefcase className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <p className="font-extrabold text-gray-900">{h.title}</p>
-                        <p className="text-[10px] text-gray-500 mt-0.5 font-medium">{h.company}</p>
-                      </div>
+                    <div className="text-right">
+                      <p className="font-extrabold text-amber-500 flex items-center gap-1 justify-end"><FiStar className="fill-amber-500 w-3 h-3" /> {activeA.github.stars}</p>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Repo Stars</p>
                     </div>
-                  ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-2 border-t border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiLinkedin /> LinkedIn Network</p>
+                  <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] shadow-sm">
+                    <span className="font-extrabold text-gray-900">{activeA.linkedin.connections} Conns</span>
+                    <span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{activeA.linkedin.tenure} / Role</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2 border-t border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiBriefcase /> Recent History</p>
+                  <div className="space-y-2.5">
+                    {activeA.history.map((h: any, i: number) => (
+                      <div key={i} className="flex gap-3 items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center shrink-0">
+                          <FiBriefcase className="w-3.5 h-3.5" />
+                        </div>
+                        <div>
+                          <p className="font-extrabold text-gray-900">{h.title}</p>
+                          <p className="text-[10px] text-gray-500 mt-0.5 font-medium">{h.company}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </Card>
+
+            {/* Candidate B Dossier */}
+            <Card className="p-6 space-y-6 border-t-[6px] border-t-emerald-500 bg-white shadow-sm">
+              <div className="flex justify-between items-start border-b border-gray-100 pb-4">
+                <div>
+                  <h4 className="font-extrabold text-lg text-gray-950 truncate">{activeB.name}</h4>
+                  <p className="text-[11px] text-gray-500 mt-0.5 font-medium">{activeB.role}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-3xl font-extrabold text-emerald-600 tracking-tight">{activeB.score}%</span>
                 </div>
               </div>
 
-            </div>
-          </Card>
-        </div>
+              {/* Details */}
+              <div className="space-y-5 text-xs">
+                <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Experience</p>
+                  <p className="font-extrabold text-gray-900">{activeB.exp}</p>
+                </div>
 
-      </div>
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiActivity /> Technical Skills</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeB.skills.map((s: string) => (
+                      <span key={s} className="px-2.5 py-1 bg-white text-gray-700 border border-gray-200 rounded-md font-bold text-[10px] shadow-sm">{s}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiGithub /> GitHub Footprint</p>
+                  <div className="p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] flex justify-between items-center shadow-sm">
+                    <div>
+                      <p className="font-extrabold text-gray-900">{activeB.github.commits}</p>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Commits</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-extrabold text-amber-500 flex items-center gap-1 justify-end"><FiStar className="fill-amber-500 w-3 h-3" /> {activeB.github.stars}</p>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">Repo Stars</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-2 border-t border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiLinkedin /> LinkedIn Network</p>
+                  <div className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-[#FFF8F4] shadow-sm">
+                    <span className="font-extrabold text-gray-900">{activeB.linkedin.connections} Conns</span>
+                    <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">{activeB.linkedin.tenure} / Role</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2 border-t border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5"><FiBriefcase /> Recent History</p>
+                  <div className="space-y-2.5">
+                    {activeB.history.map((h: any, i: number) => (
+                      <div key={i} className="flex gap-3 items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center shrink-0">
+                          <FiBriefcase className="w-3.5 h-3.5" />
+                        </div>
+                        <div>
+                          <p className="font-extrabold text-gray-900">{h.title}</p>
+                          <p className="text-[10px] text-gray-500 mt-0.5 font-medium">{h.company}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </Card>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

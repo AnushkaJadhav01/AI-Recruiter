@@ -4,6 +4,9 @@ import { motion } from 'framer-motion'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi'
 import { useApp } from '../../contexts/AppContext'
 
+import { auth } from '../../firebase/firebase'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+
 export const LoginPage = () => {
   const navigate = useNavigate()
   const { loginUser } = useApp()
@@ -13,18 +16,24 @@ export const LoginPage = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     if (!email) { setError('Please enter your email address.'); return }
     if (!password || password.length < 6) { setError('Password must be at least 6 characters.'); return }
+    
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      const isCandidate = email.toLowerCase().includes('cand') || email.toLowerCase().includes('candidate')
-      loginUser({ name: isCandidate ? 'Sarah Jenkins' : 'Anushka Recruiter', email, role: isCandidate ? 'Candidate' : 'Recruiter' })
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      // loginUser context will automatically be updated by AppContext onAuthStateChanged,
+      // but we can call it to trigger any side effects if necessary, or just rely on the effect.
       navigate('/dashboard')
-    }, 1200)
+    } catch (err: any) {
+      console.error('Firebase Login Error:', err)
+      setError(err.message || 'Failed to sign in. Please check your credentials.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -216,13 +225,19 @@ export const LoginPage = () => {
           {/* Google SSO */}
           <button
             type="button"
-            onClick={() => {
+            onClick={async () => {
               setLoading(true)
-              setTimeout(() => {
-                setLoading(false)
-                loginUser({ name: 'Anushka Recruiter', email: 'anushka@recruiter.ai', role: 'Recruiter' })
+              try {
+                const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth')
+                const provider = new GoogleAuthProvider()
+                await signInWithPopup(auth, provider)
                 navigate('/dashboard')
-              }, 1000)
+              } catch (err: any) {
+                console.error('Google Sign-In Error:', err)
+                setError(err.message || 'Failed to sign in with Google.')
+              } finally {
+                setLoading(false)
+              }
             }}
             className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl border border-[#F1DDD2] bg-white text-sm font-bold text-[#2D2A26] hover:bg-[#FFF8F4] hover:border-[#FDBA74] active:scale-[0.99] transition-all"
           >

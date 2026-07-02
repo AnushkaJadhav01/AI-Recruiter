@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   FiHelpCircle, 
@@ -14,8 +14,10 @@ import {
 import { Card } from '../../components/common/Card'
 import { Button } from '../../components/common/Button'
 import { Badge } from '../../components/common/Badge'
+import { useApp } from '../../contexts/AppContext'
 
 export const InterviewPrepPage = () => {
+  const { candidates, currentUser } = useApp()
   const [selectedCategory, setSelectedCategory] = useState<'technical' | 'behavioral' | 'hr'>('technical')
   const [selectedQuestionIdx, setSelectedQuestionIdx] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
@@ -27,34 +29,55 @@ export const InterviewPrepPage = () => {
     modelAnswer: string;
   } | null>(null)
 
-  const questions = {
-    technical: [
-      {
-        question: "Explain the difference between Server Components and Client Components in React 19.",
-        expectedAnswer: "Server Components run on the server to retrieve data and render static layouts, bypassing client bundles. Client Components use directives like 'use client' and run in the browser to handle interactivity, state updates, and hook triggers.",
-        hints: "Mention server rendering vs client bundles, 'use client' directive, and access to node modules vs browser DOM."
-      },
-      {
-        question: "How does layoutId in Framer Motion accomplish smooth layout transitions?",
-        expectedAnswer: "layoutId matches elements with identical IDs across different states, calculating their scale and position discrepancies and animating the morph automatically without manual styles.",
-        hints: "Explain layout morphing, shared elements across mounts, and automatic transition calculations."
+  // Find real candidate application entries for this user
+  const candidateData = useMemo(() => {
+    return candidates.find(c => c.email === currentUser?.email)
+  }, [candidates, currentUser])
+
+  const questions = useMemo(() => {
+    const defaultQuestions = {
+      technical: [
+        {
+          question: "Explain the difference between Server Components and Client Components in React 19.",
+          expectedAnswer: "Server Components run on the server to retrieve data and render static layouts, bypassing client bundles. Client Components use directives like 'use client' and run in the browser to handle interactivity, state updates, and hook triggers.",
+          hints: "Mention server rendering vs client bundles, 'use client' directive, and access to node modules vs browser DOM."
+        },
+        {
+          question: "How does layoutId in Framer Motion accomplish smooth layout transitions?",
+          expectedAnswer: "layoutId matches elements with identical IDs across different states, calculating their scale and position discrepancies and animating the morph automatically without manual styles.",
+          hints: "Explain layout morphing, shared elements across mounts, and automatic transition calculations."
+        }
+      ],
+      behavioral: [
+        {
+          question: "Describe a time you disagreed with a product specification. How did you resolve it?",
+          expectedAnswer: "Focus on using evidence and performance audits to back up your claim, maintaining respect, suggesting constructive alternative options, and aligning with standard developer trade-offs.",
+          hints: "Use the STAR method: Situation, Task, Action, Result. Highlight data-driven decisions."
+        }
+      ],
+      hr: [
+        {
+          question: "Why do you want to join AI Recruiter as a Senior Developer?",
+          expectedAnswer: "Express enthusiasm for scaling automation agents, building premium UX designs, and working with complex web sockets or dashboard integrations.",
+          hints: "Show familiarity with the product, highlight your skill overlap (Next.js/Node), and state career growth expectations."
+        }
+      ]
+    }
+
+    if (candidateData && Array.isArray(candidateData.interviewQuestions) && candidateData.interviewQuestions.length > 0) {
+      const customTech = candidateData.interviewQuestions.map((q: string) => ({
+        question: q,
+        expectedAnswer: `Detailed explanation of your specific implementation strategies, architectures, and design trade-offs regarding ${q.toLowerCase().replace(/[^a-z0-9 ]/g, "")}.`,
+        hints: "Highlight your hands-on project experience, mention specific frameworks, and talk about optimization metrics."
+      }))
+      return {
+        ...defaultQuestions,
+        technical: [...customTech, ...defaultQuestions.technical]
       }
-    ],
-    behavioral: [
-      {
-        question: "Describe a time you disagreed with a product specification. How did you resolve it?",
-        expectedAnswer: "Focus on using evidence and performance audits to back up your claim, maintaining respect, suggesting constructive alternative options, and aligning with standard developer trade-offs.",
-        hints: "Use the STAR method: Situation, Task, Action, Result. Highlight data-driven decisions."
-      }
-    ],
-    hr: [
-      {
-        question: "Why do you want to join AI Recruiter as a Senior Developer?",
-        expectedAnswer: "Express enthusiasm for scaling automation agents, building premium UX designs, and working with complex web sockets or dashboard integrations.",
-        hints: "Show familiarity with the product, highlight your skill overlap (Next.js/Node), and state career growth expectations."
-      }
-    ]
-  }
+    }
+
+    return defaultQuestions
+  }, [candidateData])
 
   const categoryQuestions = questions[selectedCategory]
   const currentQuestion = categoryQuestions[selectedQuestionIdx] || categoryQuestions[0]
@@ -66,34 +89,64 @@ export const InterviewPrepPage = () => {
     setEvaluating(true)
     setFeedback(null)
 
-    // Simulate AI model evaluation latency
+    // Simulate AI model evaluation with smart keyword analysis
     setTimeout(() => {
       setEvaluating(false)
-      // Dynamic feedback based on word count / content
+      const answerLower = userAnswer.toLowerCase()
       const wordCount = userAnswer.trim().split(/\s+/).length
-      if (wordCount < 10) {
+
+      if (wordCount < 15) {
         setFeedback({
-          score: 45,
-          strengths: "Your answer is concise.",
-          weaknesses: "Too short. You need to elaborate on core concepts, outline structural details, and mention rendering cycles.",
+          score: 42,
+          strengths: "Your response has a correct baseline structure.",
+          weaknesses: "Too brief. Try to elaborate on core concepts, outline structural details, and mention specific rendering cycles or database trade-offs.",
           modelAnswer: currentQuestion.expectedAnswer
         })
-      } else if (wordCount < 25) {
-        setFeedback({
-          score: 76,
-          strengths: "Good basic understanding. You correctly outlined the main ideas.",
-          weaknesses: "Missing details regarding bundler size savings, hydration benefits, and code examples.",
-          modelAnswer: currentQuestion.expectedAnswer
-        })
-      } else {
-        setFeedback({
-          score: 93,
-          strengths: "Excellent detailed response. You covered technical boundaries, rendering cycle differences, and bundler considerations.",
-          weaknesses: "Very minor spacing. Could add a brief mention of SEO gains.",
-          modelAnswer: currentQuestion.expectedAnswer
-        })
+        return
       }
-    }, 2500)
+
+      // Dynamic keywords check
+      let matches = 0
+      const matchesWords: string[] = []
+      const keywordsList = [
+        "render", "server", "client", "bundle", "hydrate", "dom", "browser", "state", "hook",
+        "layout", "animate", "morph", "id", "scale", "position", "star", "situation", "task",
+        "action", "result", "experience", "lead", "coordinate", "db", "api", "query", "scale"
+      ]
+
+      keywordsList.forEach(word => {
+        if (answerLower.includes(word)) {
+          matches++
+          matchesWords.push(word)
+        }
+      })
+
+      let score = 55 + Math.min(20, wordCount * 0.3) + Math.min(25, matches * 3)
+      score = Math.min(100, Math.round(score))
+
+      let strengths = "Good structural approach. "
+      if (matchesWords.length > 0) {
+        strengths += `You correctly highlighted key concepts like: ${matchesWords.slice(0, 4).join(', ')}.`
+      } else {
+        strengths += "Your writing style is highly professional."
+      }
+
+      let weaknesses = ""
+      if (score < 75) {
+        weaknesses = "Missing deeper architectural descriptions. Add details on project scaling constraints, library imports, and performance testing."
+      } else if (score < 90) {
+        weaknesses = "Solid explanation. To secure a perfect score, include code snippet layout illustrations or mention edge-case caching."
+      } else {
+        weaknesses = "Outstanding response! Very minor styling enhancements could be made, but conceptually complete."
+      }
+
+      setFeedback({
+        score,
+        strengths,
+        weaknesses,
+        modelAnswer: currentQuestion.expectedAnswer
+      })
+    }, 2000)
   }
 
   const handleSelectQuestion = (idx: number) => {

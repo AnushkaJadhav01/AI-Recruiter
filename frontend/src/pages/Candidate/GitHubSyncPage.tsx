@@ -14,22 +14,44 @@ import { Button } from '../../components/common/Button'
 import { Badge } from '../../components/common/Badge'
 import Progress from '../../components/common/Progress'
 
+import { useApp } from '../../contexts/AppContext'
+
 export const GitHubSyncPage = () => {
+  const { updateUserProfile, currentUser } = useApp()
   const [syncing, setSyncing] = useState(false)
-  const [syncDone, setSyncDone] = useState(false)
-  const [techScore, setTechScore] = useState(0)
-  const [starsCount, setStarsCount] = useState(0)
-  const [githubUsername, setGithubUsername] = useState('octocat')
+  const [syncDone, setSyncDone] = useState(!!currentUser?.github)
+  const [techScore, setTechScore] = useState(currentUser?.github?.techScore || 0)
+  const [starsCount, setStarsCount] = useState(currentUser?.github?.starsCount || 0)
+  const [githubUsername, setGithubUsername] = useState(currentUser?.github?.username || '')
   const [errorMsg, setErrorMsg] = useState('')
 
   const [githubData, setGithubData] = useState({
-    username: "",
-    totalRepos: 0,
-    contributions: 0,
-    languages: [] as any[],
-    qualityAudit: "",
-    projects: [] as any[]
+    username: currentUser?.github?.username || "",
+    totalRepos: currentUser?.github?.totalRepos || 0,
+    contributions: currentUser?.github?.contributions || 0,
+    languages: currentUser?.github?.languages || [] as any[],
+    qualityAudit: currentUser?.github?.qualityAudit || "",
+    projects: currentUser?.github?.projects || [] as any[]
   })
+
+  React.useEffect(() => {
+    if (currentUser?.github) {
+      setSyncDone(true)
+      setGithubUsername(currentUser.github.username || '')
+      setTechScore(currentUser.github.techScore || 0)
+      setStarsCount(currentUser.github.starsCount || 0)
+      setGithubData({
+        username: currentUser.github.username || "",
+        totalRepos: currentUser.github.totalRepos || 0,
+        contributions: currentUser.github.contributions || 0,
+        languages: currentUser.github.languages || [],
+        qualityAudit: currentUser.github.qualityAudit || "",
+        projects: currentUser.github.projects || []
+      })
+    } else if (currentUser?.githubUsername) {
+      setGithubUsername(currentUser.githubUsername)
+    }
+  }, [currentUser])
 
   const triggerSync = async () => {
     if (!githubUsername) return;
@@ -58,18 +80,18 @@ export const GitHubSyncPage = () => {
       let totalStars = 0;
       
       const projects = repos
-        .filter((r: any) => !r.fork)
-        .sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
-        .slice(0, 4)
-        .map((r: any) => {
-          return {
-            name: r.name,
-            stars: r.stargazers_count,
-            description: r.description || "No description provided.",
-            language: r.language || "Unknown"
-          }
-        });
-        
+         .filter((r: any) => !r.fork)
+         .sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
+         .slice(0, 4)
+         .map((r: any) => {
+           return {
+             name: r.name,
+             stars: r.stargazers_count,
+             description: r.description || "No description provided.",
+             language: r.language || "Unknown"
+           }
+         });
+         
       repos.forEach((r: any) => {
         if (!r.fork && r.language) {
           langCounts[r.language] = (langCounts[r.language] || 0) + 1;
@@ -90,21 +112,24 @@ export const GitHubSyncPage = () => {
           }
         });
 
-      setGithubData({
+      const calculatedScore = Math.min(99, 70 + Math.floor(totalStars / 5) + Math.floor(user.public_repos / 3));
+
+      const syncPayload = {
         username: user.login,
         totalRepos: user.public_repos,
-        contributions: (user.public_gists || 0) * 10 + (user.followers || 0) * 5 + repos.length * 2, // Proxy for activity
+        contributions: (user.public_gists || 0) * 10 + (user.followers || 0) * 5 + repos.length * 2,
         languages: languages.length > 0 ? languages : [{ name: "Markdown", percentage: 100, color: "bg-gray-400" }],
         qualityAudit: `Analyzed ${user.public_repos} repositories. Codebase demonstrates consistent modular architectures and good documentation practices. AI confidence in technical capability is high based on recent repository updates and engagement metrics.`,
-        projects: projects
-      });
-      
+        projects: projects,
+        techScore: calculatedScore,
+        starsCount: totalStars
+      };
+
+      setGithubData(syncPayload);
       setStarsCount(totalStars);
-      
-      // Calculate a proxy tech score
-      const calculatedScore = Math.min(99, 70 + Math.floor(totalStars / 5) + Math.floor(user.public_repos / 3));
       setTechScore(calculatedScore);
       
+      updateUserProfile({ github: syncPayload })
       setSyncDone(true);
     } catch (err: any) {
       console.error(err);

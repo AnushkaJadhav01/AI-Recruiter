@@ -35,17 +35,51 @@ export const SettingsPage = () => {
       if (isCandidate) {
         setCandName(currentUser.name || '')
         setCandEmail(currentUser.email || '')
+        setTargetRole(currentUser.targetRole || 'Senior Full-Stack Developer')
+        setLocation(currentUser.location || '')
+        setPortfolio(currentUser.portfolio || currentUser.githubUsername || '')
       } else {
         setRecruiterName(currentUser.name || '')
         setRecruiterEmail(currentUser.email || '')
+        setCompany(currentUser.company || 'Google DeepMind Recruitment')
+        
+        if (currentUser.weights) {
+          setResumeWeight(currentUser.weights.resumeWeight ?? 40)
+          setGithubWeight(currentUser.weights.githubWeight ?? 30)
+          setLinkedinWeight(currentUser.weights.linkedinWeight ?? 20)
+          setCommWeight(currentUser.weights.commWeight ?? 10)
+        }
       }
     }
   }, [currentUser, isCandidate])
 
   const totalWeights = resumeWeight + githubWeight + linkedinWeight + commWeight
 
+  const { updateUserProfile } = useApp()
+
   const handleSaveSettings = () => {
-    alert('Settings successfully updated.')
+    if (isCandidate) {
+      updateUserProfile({
+        name: candName,
+        email: candEmail,
+        targetRole,
+        location,
+        portfolio
+      })
+    } else {
+      updateUserProfile({
+        name: recruiterName,
+        email: recruiterEmail,
+        company,
+        weights: {
+          resumeWeight,
+          githubWeight,
+          linkedinWeight,
+          commWeight
+        }
+      })
+    }
+    alert('Settings successfully updated and saved to your profile.')
   }
 
   // Define tab navigation based on role

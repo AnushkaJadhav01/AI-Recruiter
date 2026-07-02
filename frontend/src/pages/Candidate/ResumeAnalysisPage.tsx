@@ -16,19 +16,29 @@ import { Button } from '../../components/common/Button'
 import { Badge } from '../../components/common/Badge'
 import Progress from '../../components/common/Progress'
 import { useApp } from '../../contexts/AppContext'
-
 export const ResumeAnalysisPage = () => {
-  const { currentUser } = useApp()
-  const [atsScore, setAtsScore] = useState(88)
+  const { currentUser, updateUserProfile } = useApp()
+  const [atsScore, setAtsScore] = useState<number | null>(currentUser?.resumeAnalysis?.atsScore || null)
   const [uploading, setUploading] = useState(false)
   const [pipelineStep, setPipelineStep] = useState(0)
+  
+  const [jobDescription, setJobDescription] = useState('')
+  const [recommendations, setRecommendations] = useState<any[]>(currentUser?.resumeAnalysis?.recommendations || [])
+  const [highlights, setHighlights] = useState<any>(currentUser?.resumeAnalysis?.highlights || null)
+  const [fileName, setFileName] = useState(currentUser?.resumeAnalysis?.fileName || '')
+  const [errorMsg, setErrorMsg] = useState('')
 
-  const recommendations = [
-    { type: 'warning', text: 'Add "Next.js SSR" or "Server Components" to match Senior React roles.', category: 'Keywords' },
-    { type: 'warning', text: 'Quantify your impact in the Vercel role (e.g. "% page load reduction").', category: 'Content' },
-    { type: 'success', text: 'Excellent section layouts (Experience, Education, Projects).', category: 'Formatting' },
-    { type: 'success', text: 'File format (PDF) is highly compatible with ATS parsers.', category: 'Technical' }
-  ]
+  React.useEffect(() => {
+    if (currentUser?.resumeAnalysis) {
+      setAtsScore(currentUser.resumeAnalysis.atsScore ?? null)
+      setRecommendations(currentUser.resumeAnalysis.recommendations || [])
+      setHighlights(currentUser.resumeAnalysis.highlights || null)
+      setFileName(currentUser.resumeAnalysis.fileName || '')
+    } else if (currentUser?.resumeName) {
+      setFileName(currentUser.resumeName)
+      setAtsScore(85) // Prefill a simulated ATS rating since they completed onboarding
+    }
+  }, [currentUser])
 
   const pipelineStages = [
     "Reading file structure & OCR...",
@@ -38,19 +48,75 @@ export const ResumeAnalysisPage = () => {
     "Re-generating overall ATS score..."
   ]
 
-  const simulateUpload = () => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      if (reader.result && currentUser?.email) {
+        localStorage.setItem(`resume_file_${currentUser.email}`, reader.result as string)
+      }
+    }
+    reader.readAsDataURL(file)
+
+    setFileName(file.name)
     setUploading(true)
     setPipelineStep(0)
-    
-    // Animate through parser steps
-    const timer1 = setTimeout(() => setPipelineStep(1), 1000)
-    const timer2 = setTimeout(() => setPipelineStep(2), 2000)
-    const timer3 = setTimeout(() => setPipelineStep(3), 3000)
-    const timer4 = setTimeout(() => setPipelineStep(4), 4000)
-    const timer5 = setTimeout(() => {
+    setErrorMsg('')
+
+    // Animation simulation for UI feedback while waiting
+    const timers = [
+      setTimeout(() => setPipelineStep(1), 800),
+      setTimeout(() => setPipelineStep(2), 2000),
+      setTimeout(() => setPipelineStep(3), 3500),
+      setTimeout(() => setPipelineStep(4), 5000)
+    ]
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('job_description', jobDescription)
+
+      const response = await fetch('http://localhost:8000/api/resume/optimize', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.detail || 'Failed to analyze resume.')
+      }
+
+      const data = await response.json()
+      
+      timers.forEach(clearTimeout)
+      setPipelineStep(5)
+      
+      console.log('AI Response:', data)
+      const parsedScore = data.atsScore ?? data.ats_score ?? data.score ?? data.AtsScore ?? null;
+      const numericScore = parsedScore !== null ? Number(parsedScore) : 85;
+      
+      setAtsScore(numericScore)
+      setRecommendations(data.recommendations || data.Recommendations || [])
+      setHighlights(data.highlights || data.Highlights || {})
+
+      updateUserProfile({
+        resumeAnalysis: {
+          atsScore: numericScore,
+          fileName: file.name,
+          highlights: data.highlights || data.Highlights || {},
+          recommendations: data.recommendations || data.Recommendations || []
+        }
+      })
+      
+    } catch (err: any) {
+      console.error(err)
+      setErrorMsg(err.message)
+      timers.forEach(clearTimeout)
+    } finally {
       setUploading(false)
-      setAtsScore(96) // increase score!
-    }, 5000)
+    }
   }
 
   return (
@@ -60,9 +126,24 @@ export const ResumeAnalysisPage = () => {
           <FiFileText className="text-blue-600" />
           Resume Optimizer & ATS Analysis
         </h2>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-gray-500 mt-1 mb-4">
           Scan your resume using our multi-agent parser to get instant ATS scores and formatting suggestions.
         </p>
+        <div className="w-full">
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Target Job Description (Optional)</label>
+            <textarea 
+                className="w-full h-20 p-3 border border-gray-200 rounded-xl text-xs outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-gray-800 resize-none shadow-sm"
+                placeholder="Paste the job description here so the AI can optimize your resume specifically for this role..."
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+            />
+        </div>
+        {errorMsg && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg text-xs font-semibold text-red-600 flex items-start gap-2">
+                <FiAlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>{errorMsg}</span>
+            </div>
+        )}
       </div>
 
       <AnimatePresence mode="wait">
@@ -115,22 +196,22 @@ export const ResumeAnalysisPage = () => {
             {/* Left Col: Upload & Score */}
             <div className="space-y-6">
               {/* ATS Compatibility Score */}
-              <Card className="p-6 bg-gray-900 text-white border-gray-800 shadow-md flex flex-col justify-between text-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-5">
+              <Card className="flex flex-col justify-between text-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-5 text-gray-900">
                   <FiCpu className="w-24 h-24" />
                 </div>
                 <div className="relative z-10 space-y-4">
                   <h3 className="font-extrabold text-sm text-gray-400 uppercase tracking-wider">ATS Score</h3>
                   <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-6xl font-extrabold tracking-tight">{atsScore}</span>
+                    <span className="text-6xl font-extrabold tracking-tight text-gray-900">{atsScore !== null ? atsScore : '--'}</span>
                     <span className="text-xl text-gray-500 font-bold">/100</span>
                   </div>
                   <div className="h-2.5 bg-gray-800 rounded-full overflow-hidden w-full">
                     <div 
                       className={`h-full rounded-full transition-all duration-500 ${
-                        atsScore >= 90 ? 'bg-emerald-500' : 'bg-blue-500'
+                        (atsScore || 0) >= 90 ? 'bg-emerald-500' : 'bg-blue-500'
                       }`}
-                      style={{ width: `${atsScore}%` }}
+                      style={{ width: `${atsScore || 0}%` }}
                     />
                   </div>
                   <p className="text-xs text-gray-300">
@@ -148,14 +229,21 @@ export const ResumeAnalysisPage = () => {
                   Make revisions based on feedback and re-upload your PDF to re-calculate score.
                 </p>
                 
-                <div 
-                  onClick={simulateUpload}
+                <label 
+                  htmlFor="resume-upload"
                   className="border-2 border-dashed border-gray-200 hover:border-blue-400 transition-colors p-6 rounded-xl cursor-pointer bg-slate-50/50 flex flex-col items-center justify-center space-y-2"
                 >
                   <FiUpload className="text-gray-400 w-8 h-8" />
                   <span className="text-xs font-bold text-gray-700">Drop PDF here or click to select</span>
-                  <span className="text-[9px] text-gray-400">PDF, DOCX up to 5MB</span>
-                </div>
+                  <span className="text-[9px] text-gray-400">PDF up to 5MB</span>
+                </label>
+                <input 
+                  type="file" 
+                  id="resume-upload" 
+                  accept=".pdf" 
+                  className="hidden" 
+                  onChange={handleFileUpload} 
+                />
               </Card>
             </div>
 
@@ -197,27 +285,33 @@ export const ResumeAnalysisPage = () => {
               <Card className="p-6 bg-white border border-gray-200 shadow-sm space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="font-extrabold text-sm text-gray-900 tracking-wide">Parsed Resume Highlights</h3>
-                  <Badge variant="neutral">sarah_jenkins_resume.pdf</Badge>
+                  <Badge variant="neutral">{fileName || "No file uploaded"}</Badge>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 text-xs">
-                  <div className="border border-gray-100 p-3 rounded-lg">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase">Sourced Experience</p>
-                    <p className="font-bold text-gray-800 mt-1">7 Years Total</p>
+                {highlights ? (
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div className="border border-gray-100 p-3 rounded-lg">
+                      <p className="text-[10px] text-gray-400 font-bold uppercase">Sourced Experience</p>
+                      <p className="font-bold text-gray-800 mt-1 truncate" title={highlights.experience}>{highlights.experience || "N/A"}</p>
+                    </div>
+                    <div className="border border-gray-100 p-3 rounded-lg">
+                      <p className="text-[10px] text-gray-400 font-bold uppercase">Education Degree</p>
+                      <p className="font-bold text-gray-800 mt-1 truncate" title={highlights.education}>{highlights.education || "N/A"}</p>
+                    </div>
+                    <div className="border border-gray-100 p-3 rounded-lg">
+                      <p className="text-[10px] text-gray-400 font-bold uppercase">Key Technologies</p>
+                      <p className="font-bold text-gray-800 mt-1 line-clamp-2" title={highlights.skills}>{highlights.skills || "N/A"}</p>
+                    </div>
+                    <div className="border border-gray-100 p-3 rounded-lg">
+                      <p className="text-[10px] text-gray-400 font-bold uppercase">Contact Verified</p>
+                      <p className="font-bold text-gray-800 mt-1 truncate" title={highlights.contact}>{highlights.contact || "N/A"}</p>
+                    </div>
                   </div>
-                  <div className="border border-gray-100 p-3 rounded-lg">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase">Education Degree</p>
-                    <p className="font-bold text-gray-800 mt-1">B.S. in Computer Science</p>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="text-xs text-gray-500 font-semibold">Upload a resume to see parsed highlights.</p>
                   </div>
-                  <div className="border border-gray-100 p-3 rounded-lg">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase">Key Technologies</p>
-                    <p className="font-bold text-gray-800 mt-1">React, Node.js, Express, SQL, Tailwind, AWS</p>
-                  </div>
-                  <div className="border border-gray-100 p-3 rounded-lg">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase">Contact Verified</p>
-                    <p className="font-bold text-gray-800 mt-1">+1 (555) 234-5678</p>
-                  </div>
-                </div>
+                )}
               </Card>
 
             </div>

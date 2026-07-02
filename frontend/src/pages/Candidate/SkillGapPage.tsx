@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { 
   FiTrendingUp, 
@@ -13,46 +13,125 @@ import {
 import { Card } from '../../components/common/Card'
 import { Button } from '../../components/common/Button'
 import { Badge } from '../../components/common/Badge'
+import { useApp } from '../../contexts/AppContext'
 
 export const SkillGapPage = () => {
-  const [targetRole, setTargetRole] = useState("Senior Full-Stack Developer")
+  const { candidates, jobs, currentUser } = useApp()
 
-  const skillsData: Record<string, {
-    matched: string[];
-    missing: string[];
-    recommendations: { course: string; platform: string; time: string; reason: string }[];
-    roadmap: { phase: string; title: string; desc: string; duration: string }[];
-  }> = {
-    "Senior Full-Stack Developer": {
-      matched: ["React", "Node.js", "Express", "PostgreSQL", "Tailwind CSS", "AWS"],
-      missing: ["Framer Motion", "GraphQL", "System Design Patterns"],
-      recommendations: [
-        { course: "Framer Motion Complete Course", platform: "Frontend Masters", time: "12 hours", reason: "Directly bridges the missing animation skills required for our SaaS Dashboard interface." },
-        { course: "Designing Data-Intensive Applications Guide", platform: "O'Reilly Media", time: "25 hours", reason: "Strengthens microservices queries, load balancing, and SQL indexing patterns." },
-        { course: "GraphQL API Development and Schemas", platform: "Apollo Odyssey", time: "8 hours", reason: "Adds modern API gateway routing to support our dashboard state patterns." }
-      ],
-      roadmap: [
-        { phase: "Phase 1", title: "Mastering Framer Motion", desc: "Build layouts with layoutId, animate layout changes, and optimize render cycles.", duration: "1 week" },
-        { phase: "Phase 2", title: "API Federation & GraphQL", desc: "Understand Apollo Client, state federation, schema stitchings, and queries resolution.", duration: "2 weeks" },
-        { phase: "Phase 3", title: "System Design Auditing", desc: "Re-architect caching layers with Redis, optimize query tables index, and load balance nodes.", duration: "2 weeks" }
-      ]
-    },
-    "AI/ML Research Engineer": {
-      matched: ["React", "AWS"],
-      missing: ["Python", "PyTorch", "Transformers", "LLMs", "FastAPI"],
-      recommendations: [
-        { course: "Deep Learning Specialization", platform: "Coursera", time: "40 hours", reason: "Covers ML models, parameter adjustments, and standard PyTorch architectures." },
-        { course: "Hugging Face Transformers Masterclass", platform: "Hugging Face", time: "15 hours", reason: "Teaches tokenization, fine-tunings, and model fine alignments." }
-      ],
-      roadmap: [
-        { phase: "Phase 1", title: "Python Core & FastAPI", desc: "Learn type hints, async endpoints, Pydantic data schemas, and clean routers.", duration: "2 weeks" },
-        { phase: "Phase 2", title: "PyTorch & Transformers", desc: "Develop tensor operations, gradient descents, and transformer pipeline structures.", duration: "3 weeks" },
-        { phase: "Phase 3", title: "LLM Fine-tuning & Scales", desc: "Perform weights adapters fine tuning (LoRA), quantization, and hosting endpoints.", duration: "4 weeks" }
-      ]
+  // Find real candidate application entries for this user
+  const userApplications = useMemo(() => {
+    return candidates.filter(c => c.email === currentUser?.email)
+  }, [candidates, currentUser])
+
+  // Set default target role from actual applications or fallback
+  const defaultRole = useMemo(() => {
+    if (userApplications.length > 0) {
+      const activeApp = userApplications[0]
+      const targetJob = jobs.find(j => j.id === activeApp.jobId)
+      return targetJob ? targetJob.title : (activeApp.role || "Senior Full-Stack Developer")
     }
-  }
+    return "Senior Full-Stack Developer"
+  }, [userApplications, jobs])
 
-  const data = skillsData[targetRole] || skillsData["Senior Full-Stack Developer"]
+  const [targetRole, setTargetRole] = useState("")
+
+  // Use dynamic default role when loaded
+  React.useEffect(() => {
+    if (defaultRole) {
+      setTargetRole(defaultRole)
+    }
+  }, [defaultRole])
+
+  const skillsData = useMemo(() => {
+    const data: Record<string, {
+      matched: string[];
+      missing: string[];
+      recommendations: { course: string; platform: string; time: string; reason: string }[];
+      roadmap: { phase: string; title: string; desc: string; duration: string }[];
+    }> = {
+      "Senior Full-Stack Developer": {
+        matched: ["React", "Node.js", "Express", "PostgreSQL", "Tailwind CSS", "AWS"],
+        missing: ["Framer Motion", "GraphQL", "System Design Patterns"],
+        recommendations: [
+          { course: "Framer Motion Complete Course", platform: "Frontend Masters", time: "12 hours", reason: "Directly bridges the missing animation skills required for our SaaS Dashboard interface." },
+          { course: "Designing Data-Intensive Applications Guide", platform: "O'Reilly Media", time: "25 hours", reason: "Strengthens microservices queries, load balancing, and SQL indexing patterns." },
+          { course: "GraphQL API Development and Schemas", platform: "Apollo Odyssey", time: "8 hours", reason: "Adds modern API gateway routing to support our dashboard state patterns." }
+        ],
+        roadmap: [
+          { phase: "Phase 1", title: "Mastering Framer Motion", desc: "Build layouts with layoutId, animate layout changes, and optimize render cycles.", duration: "1 week" },
+          { phase: "Phase 2", title: "API Federation & GraphQL", desc: "Understand Apollo Client, state federation, schema stitchings, and queries resolution.", duration: "2 weeks" },
+          { phase: "Phase 3", title: "System Design Auditing", desc: "Re-architect caching layers with Redis, optimize query tables index, and load balance nodes.", duration: "2 weeks" }
+        ]
+      },
+      "AI/ML Research Engineer": {
+        matched: ["React", "AWS"],
+        missing: ["Python", "PyTorch", "Transformers", "LLMs", "FastAPI"],
+        recommendations: [
+          { course: "Deep Learning Specialization", platform: "Coursera", time: "40 hours", reason: "Covers ML models, parameter adjustments, and standard PyTorch architectures." },
+          { course: "Hugging Face Transformers Masterclass", platform: "Hugging Face", time: "15 hours", reason: "Teaches tokenization, fine-tunings, and model fine alignments." }
+        ],
+        roadmap: [
+          { phase: "Phase 1", title: "Python Core & FastAPI", desc: "Learn type hints, async endpoints, Pydantic data schemas, and clean routers.", duration: "2 weeks" },
+          { phase: "Phase 2", title: "PyTorch & Transformers", desc: "Develop tensor operations, gradient descents, and transformer pipeline structures.", duration: "3 weeks" },
+          { phase: "Phase 3", title: "LLM Fine-tuning & Scales", desc: "Perform weights adapters fine tuning (LoRA), quantization, and hosting endpoints.", duration: "4 weeks" }
+        ]
+      }
+    }
+
+    // Populate user-specific applications
+    userApplications.forEach(app => {
+      const targetJob = jobs.find(j => j.id === app.jobId)
+      const roleName = targetJob ? targetJob.title : (app.role || "Target Role")
+      
+      const matched = app.matchedSkills || app.skills || ["React", "Git"]
+      const missing = app.missingSkills || []
+
+      // Build recommendations and roadmap dynamically
+      const recs = missing.map((skill: string) => ({
+        course: `${skill} Integration & Architecture`,
+        platform: "AI Learning Hub",
+        time: "15 hours",
+        reason: `Specifically recommended to address the '${skill}' skill gap identified in your profile match analysis for the ${roleName} position.`
+      }))
+
+      if (recs.length === 0) {
+        recs.push({
+          course: "Advanced Systems Integration & Architecture",
+          platform: "Enterprise Architect Hub",
+          time: "15 hours",
+          reason: "No critical skill gaps identified! Recommended to continue expanding your architectural depth."
+        })
+      }
+
+      const roadmapSteps = missing.map((skill: string, idx: number) => ({
+        phase: `Phase ${idx + 1}`,
+        title: `Acquire and deploy ${skill}`,
+        desc: `Complete specialized lab tasks, build standalone repositories using ${skill}, and evaluate scaling performance metrics.`,
+        duration: "2 weeks"
+      }))
+
+      if (roadmapSteps.length === 0) {
+        roadmapSteps.push({
+          phase: "Phase 1",
+          title: "System Maintenance & Excellence",
+          desc: "Conduct performance audits, configure security updates, and evaluate scaling architectures.",
+          duration: "Ongoing"
+        })
+      }
+
+      data[roleName] = {
+        matched,
+        missing,
+        recommendations: recs,
+        roadmap: roadmapSteps
+      }
+    })
+
+    return data
+  }, [userApplications, jobs])
+
+  const activeRole = targetRole || defaultRole
+  const data = skillsData[activeRole] || skillsData["Senior Full-Stack Developer"]
 
   return (
     <div className="space-y-6 text-left max-w-5xl mx-auto">
@@ -71,12 +150,13 @@ export const SkillGapPage = () => {
         {/* Target role dropdown */}
         <div className="text-left w-full sm:max-w-xs shrink-0">
           <select
-            value={targetRole}
+            value={activeRole}
             onChange={(e) => setTargetRole(e.target.value)}
-            className="block w-full rounded-lg border border-gray-300 text-xs px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+            className="block w-full rounded-lg border border-gray-300 text-xs px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 cursor-pointer"
           >
-            <option value="Senior Full-Stack Developer">Senior Full-Stack Developer</option>
-            <option value="AI/ML Research Engineer">AI/ML Research Engineer</option>
+            {Object.keys(skillsData).map(role => (
+              <option key={role} value={role}>{role}</option>
+            ))}
           </select>
         </div>
       </div>

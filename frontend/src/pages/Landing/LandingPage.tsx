@@ -437,6 +437,12 @@ export const LandingPage = () => {
             <p className="text-[11px] leading-relaxed text-[#D6D3D1] font-medium max-w-xs">
               Next-generation talent intelligence platform leveraging multi-agent evaluation pipelines to extract Candidate DNA and evidence validation.
             </p>
+            <div className="pt-3 space-y-2 text-[11px] text-[#A8A29E] font-medium">
+              <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-4">Contact Us</h4>
+              <p className="flex items-center gap-2">
+                <span className="text-[#F97316] text-xs">📧</span> contact@nexhire.ai
+              </p>
+            </div>
           </div>
 
           {/* Platform Column */}
